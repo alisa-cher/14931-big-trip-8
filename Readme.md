@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Alisa Chernysheva](https://up.htmlacademy.ru/ecmascript/8/user/14931).
-* Наставник: `Неизвестно`.
+* Наставник: Artem Cherkasov.
 
 ---
 
