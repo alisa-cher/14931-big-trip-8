@@ -11,27 +11,21 @@ const drawTravelPointPanel = (travel, offers) => {
             <span class="trip-point__duration">1h 30m</span>
           </p>
           <p class="trip-point__price">€ ${travel.price}</p>
-          <ul class="trip-point__offers">
-          </ul>`;
+          <ul class="trip-point__offers">${offers}</ul>`;
 
   const article = document.createElement(`article`);
   article.classList.add(`trip-point`);
   article.innerHTML = travelPointTemplate;
-
-  const offerTemplate = (offer) => `<button class="trip-point__offer">${offer}</button>`;
-  const offersWrapper = article.querySelector(`.trip-point__offers`);
-
-  for (let i = 0; i < offers.length; i++) {
-    const offerItem = document.createElement(`li`);
-    offerItem.innerHTML = offerTemplate(offers[i]);
-    offersWrapper.appendChild(offerItem);
-  }
   tripWrapper.appendChild(article);
+};
+
+const generateOffers = () => {
+  travelPoint.offers.forEach((offer) => `<li><button class="trip-point__offer">${offer}</button></li>`);
 };
 
 const drawTravelPointPanels = (numberOfStops) => {
   for (let i = 0; i < numberOfStops; i++) {
-    drawTravelPointPanel(travelPoint, travelPoint.offers);
+    drawTravelPointPanel(travelPoint, generateOffers());
   }
 };
 
