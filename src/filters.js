@@ -9,6 +9,8 @@ const filters = [
   {className: `past`, name: `PAST`, check: 0}
 ];
 
+const activeFilterClass = `trip-filter__item--active`;
+
 const filterClickHandler = (evt) => {
   evt.preventDefault();
   while (tripWrapper.firstChild) {
@@ -16,9 +18,9 @@ const filterClickHandler = (evt) => {
   }
   const checkboxes = document.querySelectorAll(`.trip-filter input`);
   for (let i = 0; i < checkboxes.length; i++) {
-    checkboxes[i].checked = false;
+    checkboxes[i].classList.remove(activeFilterClass);
   }
-  evt.target.checked = true;
+  evt.target.classList.add(activeFilterClass);
   drawTravelPointPanels(randomInteger(1, 10));
 };
 
@@ -39,6 +41,7 @@ const drawAllFilters = () => {
     drawFilter(element.className, element.name);
   });
   filterWrapper.firstElementChild.checked = true;
+  filterWrapper.firstElementChild.classList.add(activeFilterClass);
 };
 
 export default drawAllFilters;
