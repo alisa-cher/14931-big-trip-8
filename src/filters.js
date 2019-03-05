@@ -1,4 +1,5 @@
-import {randomInteger} from './helpers';
+import {getDataForAllTripPoints} from './data';
+import {getRandomInteger} from './helpers';
 import drawTravelPointPanels, {tripWrapper} from './trip-point';
 
 const filterWrapper = document.querySelector(`.trip-filter`);
@@ -21,7 +22,7 @@ const filterClickHandler = (evt) => {
     checkboxes[i].classList.remove(activeFilterClass);
   }
   evt.target.classList.add(activeFilterClass);
-  drawTravelPointPanels(drawTravelPointPanels(randomInteger(1, 10)));
+  drawTravelPointPanels(getDataForAllTripPoints(getRandomInteger(1, 10)));
 };
 
 const drawFilter = (filterClass, name) => {

@@ -10,7 +10,7 @@ const drawTravelPointPanel = (travel) => {
             <span class="trip-point__timetable"> 
                 ${transformMsToTime(travel.time.departure) + ` - ` + transformMsToTime(travel.time.arrival)}  
             </span>
-            <span class="trip-point__duration">${transformMsToTime(travel.duration)}</span>
+            <span class="trip-point__duration">${transformMsToTime(travel.duration, true)}</span>
           </p>
           <p class="trip-point__price">${travel.price} €</p>
           <ul class="trip-point__offers">${generateOffers(travel.offers)}</ul>`;

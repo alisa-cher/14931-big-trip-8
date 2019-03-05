@@ -1,11 +1,14 @@
-const transformMsToTime = (duration) => {
+const transformMsToTime = (duration, format) => {
   let minutes = parseInt(((duration / (1000 * 60)) % 60), 10);
   let hours = parseInt(((duration / (1000 * 60 * 60)) % 24), 10);
 
-  hours = (hours < 10) ? `0` + hours : hours;
+  if (!format) {
+    hours = (hours < 10) ? `0` + hours : hours;
+  }
+
   minutes = (minutes < 10) ? `0` + minutes : minutes;
 
-  return hours + `:` + minutes;
+  return (format) ? hours + `H ` + minutes + `M` : hours + `:` + minutes;
 };
 
 const getRandomInteger = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
