@@ -21,7 +21,7 @@ const filterClickHandler = (evt) => {
     checkboxes[i].classList.remove(activeFilterClass);
   }
   evt.target.classList.add(activeFilterClass);
-  drawTravelPointPanels(randomInteger(1, 10));
+  drawTravelPointPanels(drawTravelPointPanels(randomInteger(1, 10)));
 };
 
 const drawFilter = (filterClass, name) => {
