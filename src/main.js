@@ -1,5 +1,6 @@
+import {getDataForAllTripPoints} from './data';
 import drawTravelPointPanels from './trip-point';
 import drawAllFilters from './filters';
 
-drawTravelPointPanels(7);
+drawTravelPointPanels(getDataForAllTripPoints(7));
 drawAllFilters();
