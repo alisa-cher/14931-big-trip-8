@@ -1,5 +1,5 @@
-import {getNewTasks, unrenderAllTrips} from './trip/helpers';
-import {allInstancesOfAllTrips} from './main';
+import {state} from './trip/state';
+import {getNewTasks} from './trip/helpers';
 
 const filterWrapper = document.querySelector(`.trip-filter`);
 
@@ -14,19 +14,23 @@ const activeFilterClass = `trip-filter__item--active`;
 const filterClickHandler = (evt) => {
   evt.preventDefault();
 
-  unrenderAllTrips();
-
   const checkboxes = document.querySelectorAll(`.trip-filter input`);
   for (let i = 0; i < checkboxes.length; i++) {
     checkboxes[i].classList.remove(activeFilterClass);
   }
   evt.target.classList.add(activeFilterClass);
 
-  let trips = getNewTasks();
-  trips.initAll();
-  trips.renderAll();
+  state.trips.unrender();
+  state.openedTrips.forEach((instance) => {
+    instance.unrender();
+  });
+  state.clear();
 
-  allInstancesOfAllTrips.push(trips);
+  let trips = getNewTasks();
+  trips.init();
+  trips.render();
+
+  state.setStateOfTrips(trips);
 };
 
 const drawFilter = (filterClass, name) => {

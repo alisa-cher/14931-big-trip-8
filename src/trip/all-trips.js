@@ -1,13 +1,13 @@
 import TripPoint from './trip';
 import {tripWrapper} from './helpers';
 
-class AllTrips {
+class TripsContainer {
   constructor(array) {
     this._array = array;
     this._trips = [];
   }
 
-  initAll() {
+  init() {
     this._array.forEach((element) => {
       const task = new TripPoint(element);
       this._trips.push(task);
@@ -15,13 +15,13 @@ class AllTrips {
     });
   }
 
-  renderAll() {
+  render() {
     this._trips.forEach((trip) => {
       trip.render();
     });
   }
 
-  unrenderAll() {
+  unrender() {
     this._trips.forEach((trip) => {
       trip.unrender();
     });
@@ -32,4 +32,4 @@ class AllTrips {
   }
 }
 
-export default AllTrips;
+export default TripsContainer;

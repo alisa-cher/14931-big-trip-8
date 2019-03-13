@@ -1,7 +1,7 @@
+import {state} from './state';
 import {basicTravelPointTemplate} from './trip-template';
 import {tripWrapper} from './helpers';
 import OpenedTripPoint from './trip-opened';
-import {allInstancesOfAllOpenedTrips} from './../main';
 
 class TripPoint {
   constructor(data) {
@@ -16,9 +16,9 @@ class TripPoint {
   _onTripPanelClick() {
     const openedTrip = new OpenedTripPoint(this._data);
     openedTrip.render();
-    allInstancesOfAllOpenedTrips.push(openedTrip);
     tripWrapper.replaceChild(openedTrip._element, this._element);
     this.unrender();
+    state.setOpenedTrips(openedTrip);
   }
 
   render() {
