@@ -1,6 +1,5 @@
-import {getDataForAllTripPoints} from './data';
-import {getRandomInteger} from './helpers';
-import drawTravelPointPanels, {tripWrapper} from './trip-point';
+import {getNewTasks, unrenderAllTrips} from './trip/helpers';
+import {allInstancesOfAllTrips} from './main';
 
 const filterWrapper = document.querySelector(`.trip-filter`);
 
@@ -14,15 +13,20 @@ const activeFilterClass = `trip-filter__item--active`;
 
 const filterClickHandler = (evt) => {
   evt.preventDefault();
-  while (tripWrapper.firstChild) {
-    tripWrapper.removeChild(tripWrapper.firstChild);
-  }
+
+  unrenderAllTrips();
+
   const checkboxes = document.querySelectorAll(`.trip-filter input`);
   for (let i = 0; i < checkboxes.length; i++) {
     checkboxes[i].classList.remove(activeFilterClass);
   }
   evt.target.classList.add(activeFilterClass);
-  drawTravelPointPanels(getDataForAllTripPoints(getRandomInteger(1, 10)));
+
+  let trips = getNewTasks();
+  trips.initAll();
+  trips.renderAll();
+
+  allInstancesOfAllTrips.push(trips);
 };
 
 const drawFilter = (filterClass, name) => {
