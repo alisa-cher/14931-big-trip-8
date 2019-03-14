@@ -6,7 +6,7 @@ Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus 
 Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus,
 purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis.
 Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus.
-In rutrum ac purus sit amet tempus`.split(`. `).map((a) => [Math.random(), a]).sort((a, b) => a[0] - b[0]).map((a) => a[1]).slice(0, Math.floor(Math.random() * 3));
+In rutrum ac purus sit amet tempus`.split(`. `).map((a) => [Math.random(), a]).sort((a, b) => a[0] - b[0]).map((a) => a[1]).splice(0, Math.floor(Math.random() * 3));
 
 const getOffers = () => [`Add luggage`, `Switch to comfort class`, `Add meal`, `Choose seats`].slice(0, Math.floor(Math.random() * 4));
 

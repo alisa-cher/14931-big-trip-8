@@ -1,6 +1,11 @@
+import {state} from './trip/state';
 import {getDataForAllTripPoints} from './data';
-import drawTravelPointPanels from './trip-point';
+import AllTrips from './trip/all-trips';
 import drawAllFilters from './filters';
 
-drawTravelPointPanels(getDataForAllTripPoints(7));
+export const trips = new AllTrips(getDataForAllTripPoints(7));
+trips.init();
+trips.render();
+state.setStateOfTrips(trips);
+
 drawAllFilters();
