@@ -1,12 +1,12 @@
 import {state} from './state';
 import {basicTravelPointTemplate} from './trip-template';
 import {tripWrapper} from './helpers';
+import Component from './component';
 import OpenedTripPoint from './trip-opened';
 
-class TripPoint {
+class TripPoint extends Component {
   constructor(data) {
-    this._data = data;
-    this._element = null;
+    super(data);
   }
 
   get template() {
@@ -22,12 +22,7 @@ class TripPoint {
   }
 
   render() {
-    this._element = document.createElement(`article`);
-    this._element.classList.add(`trip-point`);
-    this._element.innerHTML = this.template;
-    tripWrapper.appendChild(this._element);
-    this.bind();
-    return this._element;
+    super.render(`trip-point`);
   }
 
   bind() {
@@ -36,13 +31,6 @@ class TripPoint {
 
   unbind() {
     this._element.removeEventListener(`click`, this._onTripPanelClick.bind(this));
-  }
-
-  unrender() {
-    if (this._element) {
-      this.unbind();
-      this._element = null;
-    }
   }
 }
 
