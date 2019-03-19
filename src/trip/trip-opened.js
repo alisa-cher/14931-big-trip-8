@@ -1,11 +1,11 @@
 import {extendedTravelPointTemplate} from './trip-template';
 import {tripWrapper, saveButton, deleteButton} from './helpers';
+import Component from './component';
 import TripPoint from './trip';
 
-class OpenedTripPoint {
+class OpenedTripPoint extends Component {
   constructor(data) {
-    this._data = data;
-    this._element = null;
+    super(data);
   }
 
   get template() {
@@ -30,19 +30,7 @@ class OpenedTripPoint {
   }
 
   render() {
-    this._element = document.createElement(`article`);
-    this._element.classList.add(`point`);
-    this._element.innerHTML = this.template;
-    tripWrapper.appendChild(this._element);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    if (this._element) {
-      this.unbind();
-      this._element = null;
-    }
+    super.render(`point`);
   }
 
   bind() {
