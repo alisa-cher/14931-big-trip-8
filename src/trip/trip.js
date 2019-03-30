@@ -15,7 +15,7 @@ class TripPoint extends Component {
   }
 
   _onTripPanelClick() {
-    if (this._onEdit === `function`) {
+    if (typeof this._onEdit === `function`) {
       this._onEdit();
     }
   }
