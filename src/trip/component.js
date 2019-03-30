@@ -13,6 +13,14 @@ class Component {
     throw new Error(`You have to define template.`);
   }
 
+  get element() {
+    return this._element;
+  }
+
+  set onSubmit(fn) {
+    this._onSubmit = fn;
+  }
+
   render(className) {
     this._element = document.createElement(`article`);
     this._element.classList.add(className);
@@ -20,6 +28,10 @@ class Component {
     tripWrapper.appendChild(this._element);
     this.bind();
     return this._element;
+  }
+
+  update(data) {
+    this._data = data;
   }
 
   bind() {

@@ -27,10 +27,9 @@ const filterClickHandler = (evt) => {
   state.clear();
 
   let trips = getNewTasks();
-  trips.init();
   trips.render();
 
-  state.setStateOfTrips(trips);
+  state.setTrips(trips);
 };
 
 const drawFilter = (filterClass, name) => {

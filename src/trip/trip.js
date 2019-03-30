@@ -1,8 +1,5 @@
-import {state} from './state';
 import {basicTravelPointTemplate} from './trip-template';
-import {tripWrapper} from './helpers';
 import Component from './component';
-import OpenedTripPoint from './trip-opened';
 
 class TripPoint extends Component {
   constructor(data) {
@@ -13,12 +10,14 @@ class TripPoint extends Component {
     return basicTravelPointTemplate(this._data);
   }
 
+  set onEdit(fn) {
+    this._onEdit = fn;
+  }
+
   _onTripPanelClick() {
-    const openedTrip = new OpenedTripPoint(this._data);
-    openedTrip.render();
-    tripWrapper.replaceChild(openedTrip._element, this._element);
-    this.unrender();
-    state.setOpenedTrips(openedTrip);
+    if (this._onEdit === `function`) {
+      this._onEdit();
+    }
   }
 
   render() {

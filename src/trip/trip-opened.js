@@ -1,7 +1,10 @@
 import {extendedTravelPointTemplate} from './trip-template';
-import {tripWrapper, saveButton, deleteButton} from './helpers';
+import {tripWrapper, formElement, deleteButton} from './helpers';
+import {capitalizeFirstLetter, lowercaseFirstLetter} from './../helpers';
 import Component from './component';
 import TripPoint from './trip';
+import flatpickr from './../../node_modules/flatpickr';
+import moment from './../../node_modules/moment';
 
 class OpenedTripPoint extends Component {
   constructor(data) {
@@ -12,35 +15,100 @@ class OpenedTripPoint extends Component {
     return extendedTravelPointTemplate(this._data);
   }
 
-  _replaceOpenedTrip() {
-    const trip = new TripPoint(this._data);
+  _replaceOpenedTrip(newData) {
+    const trip = new TripPoint(newData);
     trip.render();
     tripWrapper.replaceChild(trip._element, this._element);
     this.unrender();
   }
 
-  _OnSubmit(evt) {
+  static createMapper(target) {
+    return {
+      destination: (value) => (target.city = value),
+      travelway: (value) => (target.travelType = capitalizeFirstLetter(value)),
+      departureTime: (value) => (target.time.departure = moment(value.split(` `)[0], `HH:mm`).unix()),
+      arrivalTime: (value) => (target.time.arrival = moment(value.split(` `)[0], `HH:mm`).unix()),
+      price: (value) => (target.price = value),
+      offer: (value) => (target.offers.add(capitalizeFirstLetter(value.replace(/-/g, ` `)))),
+    };
+  }
+
+  _processForm(formData) {
+    const entry = {
+      travelType: ``,
+      city: ``,
+      time: {
+        departure: ``,
+        arrival: ``,
+      },
+      price: ``,
+      offers: new Set(),
+    };
+
+    const tripEditMapper = OpenedTripPoint.createMapper(entry);
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+      if (tripEditMapper[property]) {
+        tripEditMapper[property](value);
+      }
+    }
+    return entry;
+  }
+
+  _onSubmitButtonClick(evt) {
+    evt.preventDefault();
+    const formData = new FormData(this._element.querySelector(`.point form`));
+    const newData = this._processForm(formData);
+
+    if (typeof this._onSubmit === `function`) {
+      this._onSubmit(newData);
+    }
+    this.update(newData);
+  }
+
+  _onDelete(evt) {
     evt.preventDefault();
     this._replaceOpenedTrip();
   }
 
-  _OnDelete(evt) {
+  _onSelectTravelWayChange(evt) {
     evt.preventDefault();
-    this._replaceOpenedTrip();
+    const formData = new FormData(this._element.querySelector(`.point form`));
+    const newData = this._processForm(formData);
+    this._data.travelType = capitalizeFirstLetter(evt.target.value);
+
+    this.update(newData);
+    this._partialUpdate();
+  }
+
+  _checkActiveTravelType() {
+    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + lowercaseFirstLetter(this._data.travelType)}`);
+    travelTypeInput.checked = true;
+  }
+
+  _partialUpdate() {
+    this.unbind();
+    this._element.innerHTML = this.template;
+    this._checkActiveTravelType();
+    this.bind();
   }
 
   render() {
     super.render(`point`);
+    this._checkActiveTravelType();
   }
 
   bind() {
-    saveButton(this._element).addEventListener(`submit`, this._OnSubmit.bind(this));
-    deleteButton(this._element).addEventListener(`click`, this._OnDelete.bind(this));
+    formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+    deleteButton(this._element).addEventListener(`click`, this._onDelete.bind(this));
+    this._element.querySelector(`.travel-way__select`).addEventListener(`change`, this._onSelectTravelWayChange.bind(this));
+    flatpickr(`.point__time input`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
   }
 
   unbind() {
-    saveButton(this._element).removeEventListener(`submit`, this._OnSubmit.bind(this));
-    deleteButton(this._element).removeEventListener(`click`, this._OnDelete.bind(this));
+    formElement(this._element).removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+    deleteButton(this._element).removeEventListener(`click`, this._onDelete.bind(this));
+    this._element.querySelector(`.travel-way__select`).removeEventListener(`change`, this._onSelectTravelWayChange.bind(this));
   }
 }
 

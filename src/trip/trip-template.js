@@ -1,14 +1,17 @@
-import {transformMsToTime} from '../helpers';
-import {generateOffers} from './helpers';
+import {generateOffers, generatePictures} from './helpers';
+import {travelIcons} from './../data';
+import moment from './../../node_modules/moment';
 
 const basicTravelPointTemplate = (travel) => `
-          <i class="trip-icon">${Object.values(travel.travelType)}</i>
-          <h3 class="trip-point__title">${Object.keys(travel.travelType) + ` to ` + travel.city}</h3>
+          <i class="trip-icon">${travelIcons[travel.travelType]}</i>
+          <h3 class="trip-point__title">${travel.travelType + ` to ` + travel.city}</h3>
           <p class="trip-point__schedule">
-            <span class="trip-point__timetable"> 
-                ${transformMsToTime(travel.time.departure) + ` - ` + transformMsToTime(travel.time.arrival)}  
+            <span class="trip-point__timetable">
+                ${moment.unix(travel.time.departure).format(`HH:mm`) + ` - ` + moment.unix(travel.time.arrival).format(`HH:mm`)}
             </span>
-            <span class="trip-point__duration">${transformMsToTime(travel.duration, true)}</span>
+            <span class="trip-point__duration">
+                ${(moment.unix(travel.time.arrival - travel.time.departure).format(`h[H] mm[M]`))}
+            </span>
           </p>
           <p class="trip-point__price">${travel.price} €</p>
           <ul class="trip-point__offers">${generateOffers(travel.offers)}</ul>`;
@@ -21,37 +24,37 @@ const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
       </label>
 
       <div class="travel-way">
-        <label class="travel-way__label" for="travel-way__toggle">${Object.values(travel.travelType)}</label>
+        <label class="travel-way__label" for="travel-way__toggle">${travelIcons[travel.travelType]}</label>
 
         <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
 
         <div class="travel-way__select">
           <div class="travel-way__select-group">
-            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi">
+            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travelway" value="taxi">
             <label class="travel-way__select-label" for="travel-way-taxi">🚕 taxi</label>
 
-            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travel-way" value="bus">
+            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-bus" name="travelway" value="bus">
             <label class="travel-way__select-label" for="travel-way-bus">🚌 bus</label>
 
-            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travel-way" value="train">
+            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-train" name="travelway" value="train">
             <label class="travel-way__select-label" for="travel-way-train">🚂 train</label>
 
-            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="train" checked>
+            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travelway" value="flight">
             <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
           </div>
 
           <div class="travel-way__select-group">
-            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in">
+            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travelway" value="check-in">
             <label class="travel-way__select-label" for="travel-way-check-in">🏨 check-in</label>
 
-            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing">
+            <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travelway" value="sightseeing">
             <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
           </div>
         </div>
       </div>
 
       <div class="point__destination-wrap">
-        <label class="point__destination-label" for="destination">${Object.keys(travel.travelType)}</label>
+        <label class="point__destination-label" for="destination">${travel.travelType}</label>
         <input class="point__destination-input" list="destination-select" id="destination" value="${travel.city}" name="destination">
         <datalist id="destination-select">
           <option value="airport"></option>
@@ -61,9 +64,14 @@ const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
         </datalist>
       </div>
 
+      <label class="point__time point__time--hyphen">
+        choose time
+        <input class="point__input" type="text" value="${moment.unix(travel.time.departure).format(`HH:mm`)}" name="departureTime" placeholder="00:00">
+      </label>
+      
       <label class="point__time">
         choose time
-        <input class="point__input" type="text" value="${transformMsToTime(travel.time.departure) + ` - ` + transformMsToTime(travel.time.arrival)}  " name="time" placeholder="00:00 — 00:00">
+        <input class="point__input" type="text" value="${moment.unix(travel.time.arrival).format(`HH:mm`)}" name="arrivalTime" placeholder="00:00">
       </label>
 
       <label class="point__price">
@@ -112,13 +120,9 @@ const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
       </section>
       <section class="point__destination">
         <h3 class="point__details-title">Destination</h3>
-        <p class="point__destination-text">${travel.description}</p>
+        <p class="point__destination-text">${travel.description ? travel.description : ` `}</p>
         <div class="point__destination-images">
-          <img src="http://picsum.photos/330/140?r=123" alt="picture from place" class="point__destination-image">
-          <img src="http://picsum.photos/300/200?r=1234" alt="picture from place" class="point__destination-image">
-          <img src="http://picsum.photos/300/100?r=12345" alt="picture from place" class="point__destination-image">
-          <img src="http://picsum.photos/200/300?r=123456" alt="picture from place" class="point__destination-image">
-          <img src="http://picsum.photos/100/300?r=1234567" alt="picture from place" class="point__destination-image">
+          ${travel.pictures ? generatePictures(travel.pictures) : ` `}
         </div>
       </section>
       <input type="hidden" class="point__total-price" name="total-price" value="">
