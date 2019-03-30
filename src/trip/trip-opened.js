@@ -76,7 +76,6 @@ class OpenedTripPoint extends Component {
     const formData = new FormData(this._element.querySelector(`.point form`));
     const newData = this._processForm(formData);
     this._data.travelType = capitalizeFirstLetter(evt.target.value);
-
     this.update(newData);
     this._partialUpdate();
   }
