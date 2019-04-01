@@ -448,10 +448,22 @@ input[type=radio]:checked + .trip-sorting__item {
 }
 .point__time {
   font-size: 0;
-  width: 130px;
-  margin-right: 40px;
+  width: 120px;
+  position: relative;
   display: flex;
 }
+
+.point__time--hyphen:after {
+  content: "";
+  background: black;
+  position: absolute;
+  display: block;
+  width: 7px;
+  height: 2px;
+  top: 10px;
+  right: 20px;
+}
+
 .point__time .point__input {
   font-size: 17px;
 }
@@ -461,7 +473,7 @@ input[type=radio]:checked + .trip-sorting__item {
   width: 95px;
   box-sizing: border-box;
   position: relative;
-  margin-right: 30px;
+  margin: 0 30px 0 10px;
 }
 .point__price-currency {
   font-size: 17px;

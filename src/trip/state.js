@@ -1,6 +1,6 @@
 class State {
   constructor() {
-    this._stateTrips = {};
+    this._stateTrips = [];
     this._stateOpenedTrips = [];
   }
 
@@ -12,8 +12,8 @@ class State {
     return this._stateOpenedTrips;
   }
 
-  setStateOfTrips(instance) {
-    this._stateTrips = instance;
+  setTrips(instance) {
+    this._stateTrips.push(instance);
   }
 
   setOpenedTrips(instance) {
@@ -21,7 +21,7 @@ class State {
   }
 
   clear() {
-    this._stateTrips = null;
+    this._stateTrips = [];
     this._stateOpenedTrips = [];
   }
 }

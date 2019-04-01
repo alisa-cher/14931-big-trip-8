@@ -1,34 +1,52 @@
 import TripPoint from './trip';
 import {tripWrapper} from './helpers';
+import OpenedTripPoint from './trip-opened';
+import {state} from './state';
 
 class TripsContainer {
   constructor(array) {
     this._array = array;
-    this._trips = [];
-  }
-
-  init() {
-    this._array.forEach((element) => {
-      const task = new TripPoint(element);
-      this._trips.push(task);
-      return this._trips;
-    });
   }
 
   render() {
-    this._trips.forEach((trip) => {
+    this._array.forEach((element) => {
+      const trip = new TripPoint(element);
+      const openedTrip = new OpenedTripPoint(element);
       trip.render();
+      state.setTrips(trip);
+
+      trip.onEdit = () => {
+        openedTrip.render();
+        tripWrapper.replaceChild(openedTrip.element, trip.element);
+        trip.unrender();
+        state.setOpenedTrips(openedTrip);
+      };
+
+      openedTrip.onSubmit = (newObject) => {
+        trip.update(newObject);
+        trip.render();
+        tripWrapper.replaceChild(trip.element, openedTrip.element);
+        openedTrip.unrender();
+      };
+
+      openedTrip.onDelete = () => {
+        tripWrapper.removeChild(openedTrip.element);
+        openedTrip.unrender();
+        const index = this._array.findIndex((it) => it === element);
+        this._array[index] = null;
+      };
     });
   }
 
   unrender() {
-    this._trips.forEach((trip) => {
+    tripWrapper.innerHTML = ``;
+    state.trips.forEach((trip) => {
       trip.unrender();
     });
-    while (tripWrapper.firstChild) {
-      tripWrapper.removeChild(tripWrapper.firstChild);
-    }
-    this._trips = null;
+    state.openedTrips.forEach((trip) => {
+      trip.unrender();
+    });
+    state.clear();
   }
 }
 
