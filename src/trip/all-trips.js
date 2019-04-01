@@ -6,7 +6,6 @@ import {state} from './state';
 class TripsContainer {
   constructor(array) {
     this._array = array;
-    this._trips = [];
   }
 
   render() {
@@ -14,6 +13,7 @@ class TripsContainer {
       const trip = new TripPoint(element);
       const openedTrip = new OpenedTripPoint(element);
       trip.render();
+      state.setTrips(trip);
 
       trip.onEdit = () => {
         openedTrip.render();
@@ -28,17 +28,25 @@ class TripsContainer {
         tripWrapper.replaceChild(trip.element, openedTrip.element);
         openedTrip.unrender();
       };
+
+      openedTrip.onDelete = () => {
+        tripWrapper.removeChild(openedTrip.element);
+        openedTrip.unrender();
+        const index = this._array.findIndex((it) => it === element);
+        this._array[index] = null;
+      };
     });
   }
 
   unrender() {
-    this._trips.forEach((trip) => {
+    tripWrapper.innerHTML = ``;
+    state.trips.forEach((trip) => {
       trip.unrender();
     });
-    while (tripWrapper.firstChild) {
-      tripWrapper.removeChild(tripWrapper.firstChild);
-    }
-    this._trips = null;
+    state.openedTrips.forEach((trip) => {
+      trip.unrender();
+    });
+    state.clear();
   }
 }
 

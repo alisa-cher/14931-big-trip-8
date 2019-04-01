@@ -1,4 +1,4 @@
-import {state} from './trip/state';
+import {trips} from './trip/../main';
 import {getNewTasks} from './trip/helpers';
 
 const filterWrapper = document.querySelector(`.trip-filter`);
@@ -20,16 +20,9 @@ const filterClickHandler = (evt) => {
   }
   evt.target.classList.add(activeFilterClass);
 
-  state.trips.unrender();
-  state.openedTrips.forEach((instance) => {
-    instance.unrender();
-  });
-  state.clear();
-
-  let trips = getNewTasks();
-  trips.render();
-
-  state.setTrips(trips);
+  trips.unrender();
+  let newTrips = getNewTasks();
+  newTrips.render();
 };
 
 const drawFilter = (filterClass, name) => {

@@ -17,10 +17,6 @@ class Component {
     return this._element;
   }
 
-  set onSubmit(fn) {
-    this._onSubmit = fn;
-  }
-
   render(className) {
     this._element = document.createElement(`article`);
     this._element.classList.add(className);

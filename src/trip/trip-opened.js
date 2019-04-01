@@ -1,25 +1,27 @@
 import {extendedTravelPointTemplate} from './trip-template';
-import {tripWrapper, formElement, deleteButton} from './helpers';
+import {formElement, deleteButton} from './helpers';
 import {capitalizeFirstLetter, lowercaseFirstLetter} from './../helpers';
 import Component from './component';
-import TripPoint from './trip';
 import flatpickr from './../../node_modules/flatpickr';
 import moment from './../../node_modules/moment';
 
 class OpenedTripPoint extends Component {
   constructor(data) {
     super(data);
+    this._onSubmit = null;
+    this._onDelete = null;
   }
 
   get template() {
     return extendedTravelPointTemplate(this._data);
   }
 
-  _replaceOpenedTrip(newData) {
-    const trip = new TripPoint(newData);
-    trip.render();
-    tripWrapper.replaceChild(trip._element, this._element);
-    this.unrender();
+  set onSubmit(fn) {
+    this._onSubmit = fn;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   static createMapper(target) {
@@ -66,9 +68,11 @@ class OpenedTripPoint extends Component {
     this.update(newData);
   }
 
-  _onDelete(evt) {
+  _onDeleteButtonClick(evt) {
     evt.preventDefault();
-    this._replaceOpenedTrip();
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
   }
 
   _onSelectTravelWayChange(evt) {
@@ -99,14 +103,14 @@ class OpenedTripPoint extends Component {
 
   bind() {
     formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    deleteButton(this._element).addEventListener(`click`, this._onDelete.bind(this));
+    deleteButton(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
     this._element.querySelector(`.travel-way__select`).addEventListener(`change`, this._onSelectTravelWayChange.bind(this));
     flatpickr(`.point__time input`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
   }
 
   unbind() {
     formElement(this._element).removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    deleteButton(this._element).removeEventListener(`click`, this._onDelete.bind(this));
+    deleteButton(this._element).removeEventListener(`click`, this._onDeleteButtonClick.bind(this));
     this._element.querySelector(`.travel-way__select`).removeEventListener(`change`, this._onSelectTravelWayChange.bind(this));
   }
 }

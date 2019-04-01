@@ -13,7 +13,7 @@ class State {
   }
 
   setTrips(instance) {
-    this._stateTrips = instance;
+    this._stateTrips.push(instance);
   }
 
   setOpenedTrips(instance) {
