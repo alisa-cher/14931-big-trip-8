@@ -2,6 +2,15 @@ class State {
   constructor() {
     this._stateTrips = [];
     this._stateOpenedTrips = [];
+    this._stateData = [];
+  }
+
+  get data() {
+    return this._stateData;
+  }
+
+  setData(array) {
+    this._stateData = array;
   }
 
   get trips() {

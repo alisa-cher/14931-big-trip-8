@@ -6,4 +6,6 @@ const getRandomTimeStampWithinADay = () => (1 + Math.floor(Math.random() * 24 * 
 const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 const lowercaseFirstLetter = (string) => string.charAt(0).toLowerCase() + string.slice(1);
 
-export {getRandomInteger, getRandomElementFromArray, getRandomTimeStampWithinADay, capitalizeFirstLetter, lowercaseFirstLetter};
+const sortObjectKeys = (obj) => Object.keys(obj).sort((a, b) => obj[b] - obj[a]);
+
+export {getRandomInteger, getRandomElementFromArray, getRandomTimeStampWithinADay, capitalizeFirstLetter, lowercaseFirstLetter, sortObjectKeys};

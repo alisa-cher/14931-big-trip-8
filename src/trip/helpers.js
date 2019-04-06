@@ -1,6 +1,6 @@
 import {getDataForAllTripPoints} from './../data';
 import {getRandomInteger} from './../helpers';
-import AllTrips from './all-trips';
+import AllTrips from './trips-container';
 
 const tripWrapper = document.querySelector(`.trip-day__items`);
 const formElement = (element) => element.querySelector(`.point form`);
