@@ -1,5 +1,5 @@
 import {basicTravelPointTemplate} from './trip-template';
-import Component from './component';
+import Component from './../component';
 
 class TripPoint extends Component {
   constructor(data) {
@@ -21,7 +21,9 @@ class TripPoint extends Component {
   }
 
   render() {
-    super.render(`trip-point`);
+    super.render(`article`);
+    this._element.classList.add(`trip-point`);
+    return this._element;
   }
 
   bind() {

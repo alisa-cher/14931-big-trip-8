@@ -10,11 +10,19 @@ In rutrum ac purus sit amet tempus`.split(`. `).map((a) => [Math.random(), a]).s
 
 const getOffers = () => new Set([`Add luggage`, `Switch to comfort class`, `Add meal`, `Choose seats`].slice(0, Math.floor(Math.random() * 4)));
 
+const matchOffersWithPrices = {
+  'Add luggage': 30,
+  'Switch to comfort class': 100,
+  'Add meal': 15,
+  'Choose seats': 5,
+};
+
 const getImages = () => [`http://picsum.photos/300/150?r=${Math.random()}`, `http://picsum.photos/300/150?r=${Math.random()}`, `http://picsum.photos/300/150?r=${Math.random()}`, `http://picsum.photos/300/150?r=${Math.random()}`].slice(0, Math.floor(Math.random() * 4));
 
 const allCities = [`New-York`, `Tbilisi`, `Amsterdam`, `Berlin`, `Sidney`];
 
-const travelTypes = [`Taxi`, `Bus`, `Train`, `Flight`, `Check-in`, `Sightseeing`];
+const transportTypes = [`Taxi`, `Bus`, `Train`, `Flight`];
+const travelTypes = [...transportTypes, `Check-in`, `Sightseeing`];
 
 const travelIcons = {
   'Taxi': `🚕`,
@@ -45,4 +53,4 @@ const getAllData = () => ({
 
 const getDataForAllTripPoints = (length) => (new Array(length).fill(``).map(()=> getAllData()));
 
-export {getAllData, getDataForAllTripPoints, travelIcons};
+export {getAllData, getDataForAllTripPoints, travelIcons, travelTypes, matchOffersWithPrices, transportTypes};

@@ -1,18 +1,19 @@
 import TripPoint from './trip';
-import {tripWrapper} from './helpers';
 import OpenedTripPoint from './trip-opened';
-import {state} from './state';
+import {state} from '../state';
+
+const tripWrapper = document.querySelector(`.trip-day__items`);
 
 class TripsContainer {
   constructor(array) {
     this._array = array;
   }
 
-  render() {
+  init() {
     this._array.forEach((element) => {
       const trip = new TripPoint(element);
       const openedTrip = new OpenedTripPoint(element);
-      trip.render();
+      tripWrapper.appendChild(trip.render());
       state.setTrips(trip);
 
       trip.onEdit = () => {
@@ -24,7 +25,7 @@ class TripsContainer {
 
       openedTrip.onSubmit = (newObject) => {
         trip.update(newObject);
-        trip.render();
+        tripWrapper.appendChild(trip.render());
         tripWrapper.replaceChild(trip.element, openedTrip.element);
         openedTrip.unrender();
       };
@@ -38,7 +39,7 @@ class TripsContainer {
     });
   }
 
-  unrender() {
+  remove() {
     tripWrapper.innerHTML = ``;
     state.trips.forEach((trip) => {
       trip.unrender();
