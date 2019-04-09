@@ -1,7 +1,7 @@
 import {extendedTravelPointTemplate} from './trip-template';
 import {formElement, deleteButton} from './helpers';
 import {capitalizeFirstLetter, lowercaseFirstLetter} from './../helpers';
-import Component from './component';
+import Component from './../component';
 import flatpickr from './../../node_modules/flatpickr';
 import moment from './../../node_modules/moment';
 
@@ -97,15 +97,17 @@ class OpenedTripPoint extends Component {
   }
 
   render() {
-    super.render(`point`);
+    super.render(`article`);
+    this._element.classList.add(`point`);
     this._checkActiveTravelType();
+    return this._element;
   }
 
   bind() {
     formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
     deleteButton(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
     this._element.querySelector(`.travel-way__select`).addEventListener(`change`, this._onSelectTravelWayChange.bind(this));
-    flatpickr(`.point__time input`, {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
+    flatpickr(this._element.querySelectorAll(`.point__time input`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
   }
 
   unbind() {

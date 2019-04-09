@@ -3,25 +3,21 @@ import {bindMenuEvents} from './menu';
 import AllFilters from './filter/filters-container';
 import AllTrips from './trip/trips-container';
 import {dataFilters} from './filter/data';
-import {state} from './trip/state';
-import Statistics from './statistics/statistics';
-import {getConfig, moneyChartConfigs, transportChartConfigs, timeChartConfigs} from './statistics/config';
+import {state} from './state';
+import StatisticsContainer from './statistics/statistics-container';
 
 state.setData(getDataForAllTripPoints(7));
+
 export const trips = new AllTrips(state.data);
-trips.render();
+trips.init();
 
-const filters = new AllFilters(dataFilters);
-filters.render();
+export const filters = new AllFilters(dataFilters);
+filters.init();
 
-const moneyChart = new Statistics(getConfig(moneyChartConfigs(state.data)), `money`);
-const transportChart = new Statistics(getConfig(transportChartConfigs(state.data)), `transport`);
-const timeChart = new Statistics(getConfig(timeChartConfigs(state.data)), `time`);
+export const statistics = new StatisticsContainer(state.data);
+statistics.init();
 
-bindMenuEvents();
-
-moneyChart.render();
-transportChart.render();
-timeChart.render();
-
-export {moneyChart, transportChart, timeChart};
+bindMenuEvents(() => {
+  statistics.update(state.data);
+  filters.destroy();
+}, () => filters.init());

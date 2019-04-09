@@ -1,10 +1,11 @@
 import Chart from 'chart.js';
+import Component from './../component';
 
-const statisticsWrapper = document.querySelector(`.statistic`);
 const BAR_HEIGHT = 55;
 
-class Statistics {
+class Statistics extends Component {
   constructor(configs, className) {
+    super();
     this.className = className;
     this._configs = configs;
     this._labels = configs.data.labels;
@@ -21,23 +22,17 @@ class Statistics {
     this._chart = new Chart(canvasElement, configs);
   }
 
-  setChartHeight() {
-    const canvasWrapper = statisticsWrapper.querySelector(`.statistic__item--${this.className}`);
-    canvasWrapper.style.height = BAR_HEIGHT * this._labels.length + 20 + `px`;
-  }
-
   get template() {
-    this._element = document.createElement(`div`);
-    this._element.classList.add(`statistic__item`, `statistic__item--${this.className}`);
-    this._element.innerHTML = `<canvas class="statistic__${this.className}" width="900"></canvas>`;
-    const ctx = this._element.querySelector(`canvas`);
-    this.init(ctx, this._configs);
-    return this._element;
+    return `<canvas class="statistic__${this.className}" width="900"></canvas>`;
   }
 
   render() {
-    statisticsWrapper.appendChild(this.template);
-    this.setChartHeight();
+    super.render(`div`);
+    this._element.classList.add(`statistic__item`, `statistic__item--${this.className}`);
+    const ctx = this._element.querySelector(`canvas`);
+    ctx.height = BAR_HEIGHT * this._labels.length;
+    this.init(ctx, this._configs);
+    return this._element;
   }
 
   update(labels, dataArr) {

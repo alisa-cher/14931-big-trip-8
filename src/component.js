@@ -1,5 +1,3 @@
-import {tripWrapper} from './helpers';
-
 class Component {
   constructor(data) {
     if (new.target === Component) {
@@ -17,11 +15,9 @@ class Component {
     return this._element;
   }
 
-  render(className) {
-    this._element = document.createElement(`article`);
-    this._element.classList.add(className);
+  render(element) {
+    this._element = document.createElement(element);
     this._element.innerHTML = this.template;
-    tripWrapper.appendChild(this._element);
     this.bind();
     return this._element;
   }
@@ -30,13 +26,9 @@ class Component {
     this._data = data;
   }
 
-  bind() {
-    throw new Error(`You have to need to define bind method.`);
-  }
+  bind() {}
 
-  unbind() {
-    throw new Error(`You have to need to define unbind method.`);
-  }
+  unbind() {}
 
   unrender() {
     if (this._element) {

@@ -1,11 +1,10 @@
-import Component from './component';
-
-const filterWrapper = document.querySelector(`.trip-controls__menus`);
+import Component from './../component';
 
 class Filter extends Component {
   constructor(data) {
     super(data);
     this._onChange = null;
+    this._clickedFilter = null;
   }
 
   get template() {
@@ -18,14 +17,27 @@ class Filter extends Component {
     this._onChange = fn;
   }
 
+  setActiveFilter(filter) {
+    this._clickedFilter = filter;
+  }
+
+  get activeFilter() {
+    return this._clickedFilter;
+  }
+
   _onFilterChange(evt) {
     if (typeof this._onChange === `function`) {
+      this.setActiveFilter(evt.target.id);
       this._onChange(evt);
     }
   }
 
   render() {
-    super.render(filterWrapper);
+    super.render(`form`);
+    this._element.classList.add(`trip-filter`);
+    this._element.firstElementChild.checked = true;
+    this.setActiveFilter(`filter-everything`);
+    return this._element;
   }
 
   bind() {

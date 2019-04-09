@@ -1,35 +1,35 @@
-import {moneyChart, transportChart, timeChart} from './main';
-import {state} from './trip/state';
-import {moneyChartLabels, moneyChartData, transportChartData, transportChartLabels, timeChartData, timeChartLabels} from './statistics/filter-service';
 const menuItemElements = document.querySelectorAll(`.view-switch__item`);
 const activeMenuItemClass = `view-switch__item--active`;
 const tableWrapperElement = document.querySelector(`#table`);
 const statisticsWrapperElement = document.querySelector(`#stats`);
 
-const onMenuElementClick = (evt) => {
-  document.querySelector(`.${activeMenuItemClass}`).classList.remove(activeMenuItemClass);
-  evt.target.classList.add(activeMenuItemClass);
+const hideElement = (element) => element.classList.add(`visually-hidden`);
 
-  if (evt.target.classList.contains(`view-switch__item--stats`)) {
+const showElement = (element) => element.classList.remove(`visually-hidden`);
 
-    const filterEmptyData = (arr) => arr.filter((item) => item !== null);
-    const updatedData = filterEmptyData(state.data);
+const removeActiveMenuClass = () => document.querySelector(`.${activeMenuItemClass}`).classList.remove(activeMenuItemClass);
 
-    moneyChart.update(moneyChartLabels(updatedData), moneyChartData(updatedData));
-    transportChart.update(transportChartLabels(updatedData), transportChartData(updatedData));
-    timeChart.update(timeChartLabels(updatedData), timeChartData(updatedData));
+const addActiveMenuClassToClickedElement = (element) => element.classList.add(activeMenuItemClass);
 
-    tableWrapperElement.classList.add(`visually-hidden`);
-    statisticsWrapperElement.classList.remove(`visually-hidden`);
+const isStatisticsMenuItem = (element) => element.classList.contains(`view-switch__item--stats`);
+
+const handleMenuElementClick = (evt, cb, anotherCb) => {
+  removeActiveMenuClass();
+  addActiveMenuClassToClickedElement(evt.target);
+
+  if (isStatisticsMenuItem(evt.target)) {
+    cb();
+    hideElement(tableWrapperElement);
+    showElement(statisticsWrapperElement);
   } else {
-    statisticsWrapperElement.classList.add(`visually-hidden`);
-    tableWrapperElement.classList.remove(`visually-hidden`);
+    anotherCb();
+    hideElement(statisticsWrapperElement);
+    showElement(tableWrapperElement);
   }
-
 };
 
-export const bindMenuEvents = () => {
+export const bindMenuEvents = (cb, anotherCb) => {
   for (let item of menuItemElements) {
-    item.addEventListener(`click`, onMenuElementClick);
+    item.addEventListener(`click`, (evt) => handleMenuElementClick(evt, cb, anotherCb));
   }
 };

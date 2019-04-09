@@ -1,5 +1,5 @@
 export const dataFilters = [
-  {className: `everything`, name: `EVERYTHING`, check: 1},
-  {className: `future`, name: `FUTURE`, check: 0},
-  {className: `past`, name: `PAST`, check: 0}
+  {className: `everything`, name: `EVERYTHING`},
+  {className: `future`, name: `FUTURE`},
+  {className: `past`, name: `PAST`}
 ];

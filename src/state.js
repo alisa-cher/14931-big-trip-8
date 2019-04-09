@@ -3,6 +3,7 @@ class State {
     this._stateTrips = [];
     this._stateOpenedTrips = [];
     this._stateData = [];
+    this._filters = {};
   }
 
   get data() {
@@ -27,6 +28,14 @@ class State {
 
   setOpenedTrips(instance) {
     this._stateOpenedTrips.push(instance);
+  }
+
+  setFilters(instance) {
+    this._filters = instance;
+  }
+
+  get filters() {
+    return this._filters;
   }
 
   clear() {

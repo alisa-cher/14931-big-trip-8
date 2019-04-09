@@ -1,5 +1,6 @@
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {moneyChartLabels, moneyChartData, transportChartData, transportChartLabels, timeChartData, timeChartLabels} from './filter-service';
+import {moneyChartLabels, moneyChartData, transportChartData, transportChartLabels, timeChartData, timeChartLabels} from './statistics-service';
+import {getDurationInHoursAndMinutes} from './../helpers';
 
 const moneyChartConfigs = (data) => {
   return {
@@ -23,7 +24,7 @@ const timeChartConfigs = (data) => {
   return {
     labels: timeChartLabels(data),
     data: timeChartData(data),
-    formatter: (val) => `${val}H`,
+    formatter: (val) => `${getDurationInHoursAndMinutes(val)}`,
     title: `TIME SPENT`,
   };
 };
