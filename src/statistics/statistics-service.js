@@ -1,14 +1,7 @@
-import {travelIcons, matchOffersWithPrices, transportTypes} from './../data';
-import {sortObjectKeys, checkIfHasProperty} from './../helpers';
+import {travelIcons, transportTypes} from '../trip/data';
+import {sortObjectKeys, checkIfHasProperty, capitalizeFirstLetter, calcTripPointPrice} from './../helpers';
 
 const getTripTransportPoints = (tripPoints) => tripPoints.filter((tripPoint) => transportTypes.includes(tripPoint.travelType));
-
-const getTotalOffersCost = (arr) => arr.map((offer) => matchOffersWithPrices[offer]).reduce((cost, offer) => cost + offer);
-
-const calcTripPointPrice = (tripPointData) => {
-  const offersArray = [...tripPointData.offers];
-  return offersArray.length ? tripPointData.price + getTotalOffersCost(offersArray) : tripPointData.price;
-};
 
 // chart transport type + money spent
 const getMoneyStatistics = (tripPoints) => {
@@ -42,7 +35,7 @@ const getTimeStatistics = function (tripPoints) {
   const statistics = {};
   for (const tripPoint of tripPoints) {
     const icon = travelIcons[tripPoint.travelType];
-    statistics[icon + ` ` + tripPoint.travelType + ` to ` + tripPoint.city] = Math.abs(tripPoint.time.arrival - tripPoint.time.departure);
+    statistics[icon + ` ` + capitalizeFirstLetter(tripPoint.travelType) + ` to ` + tripPoint.destination.name] = Math.abs(tripPoint.time.arrival - tripPoint.time.departure);
   }
   return statistics;
 };
@@ -51,10 +44,10 @@ const timeChartData = (data) => sortObjectKeys(getTimeStatistics(data)).map((typ
 const timeChartLabels = (data) => sortObjectKeys(getTimeStatistics(data)).map((type) => `${type}`);
 
 const moneyChartData = (data) => sortObjectKeys(getMoneyStatistics(data)).map((type) => getMoneyStatistics(data)[type]);
-const moneyChartLabels = (data) => sortObjectKeys(getMoneyStatistics(data)).map((type) => `${travelIcons[type]} ${type}`);
+const moneyChartLabels = (data) => sortObjectKeys(getMoneyStatistics(data)).map((type) => `${travelIcons[type]} ${capitalizeFirstLetter(type)}`);
 
 const transportChartData = (data) => sortObjectKeys(getTransportStatistics(data)).map((type) => getTransportStatistics(data)[type]);
-const transportChartLabels = (data) => sortObjectKeys(getTransportStatistics(data)).map((type) => `${travelIcons[type]} ${type}`);
+const transportChartLabels = (data) => sortObjectKeys(getTransportStatistics(data)).map((type) => `${travelIcons[type]} ${capitalizeFirstLetter(type)}`);
 
 export {moneyChartData, moneyChartLabels, transportChartData, transportChartLabels, timeChartData, timeChartLabels};
 

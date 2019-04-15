@@ -1,6 +1,6 @@
 import Filter from './filters';
 import {state} from '../state';
-import AllTrips from './../trip/trips-container';
+import {TripsContainer} from './../trip/trips-container';
 import {trips} from './../main';
 import {filterTasks} from "./filter-service";
 
@@ -18,8 +18,9 @@ class FiltersContainer {
 
     filter.onChange = () => {
       const filteredTripsData = filterTasks(state.data, filter.activeFilter);
+      state.setFilteredTrips(filteredTripsData);
       trips.remove();
-      const filteredTrips = new AllTrips(filteredTripsData);
+      const filteredTrips = new TripsContainer(filteredTripsData, state.destinations);
       filteredTrips.init();
     };
   }
