@@ -52,6 +52,7 @@ class TripsContainer {
             tripWrapper.appendChild(trip.render());
             tripWrapper.replaceChild(trip.element, openedTrip.element);
             openedTrip.unrender();
+            // по айди получить элемент, поменять цену
           })
           .catch(() => {
             openedTrip.shake();

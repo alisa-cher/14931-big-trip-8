@@ -9,6 +9,10 @@ import StatisticsContainer from './statistics/statistics-container';
 import SortingPanelContainer from './sorting-panel/sorting-panel-container';
 import API from './data/api';
 import {ModelTrip} from './data/model-trip';
+import {calcTripPointsPrices} from './total-price/total-price-service';
+import TotalPrice from './total-price/total-price';
+
+const menuElement = document.querySelector(`.menu`);
 
 const AUTHORIZATION = `Basic deo0w590ik29889a=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
@@ -18,6 +22,7 @@ export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 export let trips;
 export let statistics;
 export let filters;
+let totalPrice;
 
 
 const init = () => {
@@ -39,6 +44,10 @@ const init = () => {
 
       filters = new AllFilters(dataFilters);
       filters.init();
+
+      totalPrice = new TotalPrice(calcTripPointsPrices(state.data));
+      menuElement.appendChild(totalPrice.render());
+
 
       bindMenuEvents(() => {
         statistics.update(tripPoints);
@@ -63,6 +72,8 @@ const init = () => {
       api.createTrip(ModelTrip.toRAW(newOpenedTrip._tripPoint))
         .then(() => api.getTrips())
         .then((data) => {
+          state.setData(data);
+          totalPrice.update(calcTripPointsPrices(state.data));
           newOpenedTrip.unrender();
           trips.remove();
           trips.update(data);
