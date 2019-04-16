@@ -19,7 +19,6 @@ class OpenedTripPoint extends TripComponent {
     super(tripPoint);
     this._destinations = destinations;
     this._offersForAllDestinations = offers;
-    this._offersForAllDestinations = offers;
     this._onSubmit = null;
     this._onDelete = null;
     this._onEscape = null;
@@ -46,6 +45,12 @@ class OpenedTripPoint extends TripComponent {
         tripEditMapper[property](value);
       }
     }
+
+    entry.offers = this._tripPoint.offers;
+    entry.destination.pictures = this._tripPoint.destination.pictures;
+    entry.destination.description = this._tripPoint.destination.description;
+    entry.isFavorite = this._tripPoint.isFavorite;
+
     return entry;
   }
 
@@ -75,11 +80,14 @@ class OpenedTripPoint extends TripComponent {
     };
   }
 
+  _getFormData() {
+    const formData = new FormData(formElement(this._element));
+    return this._processForm(formData);
+  }
+
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
     if (this._validateChosenDestination(destinationInputElement(this._element), destinationInputElement(this._element).value)) {
-      this.update(this._getFormData());
-
       if (typeof this._onSubmit === `function`) {
         this._onSubmit(this._getFormData());
       }
@@ -97,11 +105,6 @@ class OpenedTripPoint extends TripComponent {
     if (typeof this._onDelete === `function`) {
       this._onDelete();
     }
-  }
-
-  _getFormData() {
-    const formData = new FormData(formElement(this._element));
-    return this._processForm(formData);
   }
 
   _findIndexOfNewTravelType(travelType) {

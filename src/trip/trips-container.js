@@ -20,66 +20,72 @@ class TripsContainer {
   init() {
     this._tripPoints.forEach((element) => {
       const trip = new TripPoint(element);
-      const openedTrip = new OpenedTripPoint(element, this._destinations, this._offers);
-
       tripWrapper.appendChild(trip.render());
       state.setTrips(trip);
-
-      trip.onEdit = () => {
-        state.setOpenedTrips(element);
-        openedTrip.render();
-        tripWrapper.replaceChild(openedTrip.element, trip.element);
-        trip.unrender();
-      };
-
-      // тут у меня проблемы
-      openedTrip.onEscape = () => {
-        if (!openedTrip.element) {
-          openedTrip.unrender();
-        } else {
-          tripWrapper.appendChild(trip.render());
-          tripWrapper.replaceChild(trip.element, openedTrip.element);
-          openedTrip.unrender();
-        }
-      };
-
-      openedTrip.onSubmit = () => {
-        openedTrip.blockForm();
-        openedTrip.modifySaveButtonText(`Saving...`);
-        api.updateTrip({id: element.id, data: ModelTrip.toRAW(element)})
-          .then((newTripPointData) => {
-            trip.update(newTripPointData);
-            tripWrapper.appendChild(trip.render());
-            tripWrapper.replaceChild(trip.element, openedTrip.element);
-            openedTrip.unrender();
-            // тут обновить общую цену
-          })
-          .catch(() => {
-            openedTrip.shake();
-            openedTrip.changeFormBorder(`3px solid red`);
-            openedTrip.unlockForm();
-            openedTrip.modifySaveButtonText(`Save`);
-          });
-      };
-
-      openedTrip.onDelete = () => {
-        openedTrip.blockForm();
-        openedTrip.modifyDeleteButtonText(`Deleting...`);
-        api.deleteTrip(element.id)
-          .catch(() => {
-            openedTrip.shake();
-            openedTrip.changeFormBorder(`3px solid red`);
-            openedTrip.unlockForm();
-            openedTrip.modifyDeleteButtonText(`Delete`);
-          })
-          .then(() => api.getTrips())
-          .then((tripPoints) => state.setData(tripPoints))
-          .then(() => {
-            tripWrapper.removeChild(openedTrip.element);
-            openedTrip.unrender();
-          });
-      };
+      this.initTripPoint(trip, element);
     });
+  }
+
+  initTripPoint(trip, element) {
+    trip.onEdit = () => {
+      const editedTrip = element.copy();
+      const openedTrip = new OpenedTripPoint(editedTrip, this._destinations, this._offers);
+      this.initOpenedTrip(trip, openedTrip, editedTrip);
+
+      state.setOpenedTrips(element);
+      openedTrip.render();
+      tripWrapper.replaceChild(openedTrip.element, trip.element);
+      trip.unrender();
+    };
+  }
+
+  initOpenedTrip(trip, openedTrip, editedTrip) {
+    openedTrip.onEscape = () => {
+      if (!openedTrip.element) {
+        openedTrip.unrender();
+      } else {
+        tripWrapper.appendChild(trip.render());
+        tripWrapper.replaceChild(trip.element, openedTrip.element);
+        openedTrip.unrender();
+      }
+    };
+
+    openedTrip.onSubmit = (formData) => {
+      openedTrip.blockForm();
+      openedTrip.modifySaveButtonText(`Saving...`);
+
+      api.updateTrip({id: editedTrip.id, data: ModelTrip.toRAW(formData)})
+        .then((newTripPointData) => {
+          const newTrip = new TripPoint(newTripPointData);
+          this.initTripPoint(newTrip, newTripPointData);
+          tripWrapper.replaceChild(newTrip.render(), openedTrip.element);
+          openedTrip.unrender();
+        })
+        .catch(() => {
+          openedTrip.shake();
+          openedTrip.changeFormBorder(`3px solid red`);
+          openedTrip.unlockForm();
+          openedTrip.modifySaveButtonText(`Save`);
+        });
+    };
+
+    openedTrip.onDelete = () => {
+      openedTrip.blockForm();
+      openedTrip.modifyDeleteButtonText(`Deleting...`);
+      api.deleteTrip(editedTrip.id)
+        .catch(() => {
+          openedTrip.shake();
+          openedTrip.changeFormBorder(`3px solid red`);
+          openedTrip.unlockForm();
+          openedTrip.modifyDeleteButtonText(`Delete`);
+        })
+        .then(() => api.getTrips())
+        .then((tripPoints) => state.setData(tripPoints))
+        .then(() => {
+          tripWrapper.removeChild(openedTrip.element);
+          openedTrip.unrender();
+        });
+    };
   }
 
   remove() {
@@ -87,10 +93,6 @@ class TripsContainer {
     state.trips.forEach((trip) => {
       trip.unrender();
     });
-    state.openedTrips.forEach((trip) => {
-      trip.unrender();
-    });
-    state.clear();
   }
 }
 

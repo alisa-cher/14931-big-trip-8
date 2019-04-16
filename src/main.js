@@ -38,7 +38,7 @@ const init = () => {
 
       trips = new TripsContainer(tripPoints, destinations, offers);
       trips.init();
-
+      
       statistics = new StatisticsContainer(tripPoints);
       statistics.init();
 
@@ -47,7 +47,6 @@ const init = () => {
 
       totalPrice = new TotalPrice(calcTripPointsPrices(state.data));
       menuElement.appendChild(totalPrice.render());
-
 
       bindMenuEvents(() => {
         statistics.update(tripPoints);
@@ -73,7 +72,6 @@ const init = () => {
         .then(() => api.getTrips())
         .then((data) => {
           state.setData(data);
-          totalPrice.update(calcTripPointsPrices(state.data));
           newOpenedTrip.unrender();
           trips.remove();
           trips.update(data);
