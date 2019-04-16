@@ -1,9 +1,8 @@
 import TripPoint from './trip';
 import OpenedTripPoint from './trip-opened';
 import {state} from '../state';
-import {api, totalPrice} from './../main';
+import {api} from './../main';
 import {ModelTrip} from "../data/model-trip";
-import {calcTripPointsPrices} from './../total-price/total-price-service';
 
 const tripWrapper = document.querySelector(`.trip-day__items`);
 
