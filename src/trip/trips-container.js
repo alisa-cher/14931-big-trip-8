@@ -1,8 +1,9 @@
 import TripPoint from './trip';
 import OpenedTripPoint from './trip-opened';
 import {state} from '../state';
-import {api} from './../main';
+import {api, totalPrice} from './../main';
 import {ModelTrip} from "../data/model-trip";
+import {calcTripPointsPrices} from './../total-price/total-price-service';
 
 const tripWrapper = document.querySelector(`.trip-day__items`);
 
@@ -52,7 +53,7 @@ class TripsContainer {
             tripWrapper.appendChild(trip.render());
             tripWrapper.replaceChild(trip.element, openedTrip.element);
             openedTrip.unrender();
-            // по айди получить элемент, поменять цену
+            // тут обновить общую цену
           })
           .catch(() => {
             openedTrip.shake();

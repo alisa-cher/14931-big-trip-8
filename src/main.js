@@ -22,7 +22,7 @@ export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 export let trips;
 export let statistics;
 export let filters;
-let totalPrice;
+export let totalPrice;
 
 
 const init = () => {

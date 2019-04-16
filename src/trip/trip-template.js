@@ -106,7 +106,7 @@ const extendedTravelPointTemplate = (travel, destinations) => `<form action="" m
     </section>
   </form>`;
 
-const generateOffers = (offers) => [...offers].map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
+const generateOffers = (offers) => [...offers].slice(0, 3).map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
 
 const generatePictures = (pictures) => pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``);
 

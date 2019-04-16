@@ -12,7 +12,7 @@ const travelWaySelectElement = (element) => element.querySelector(`.travel-way__
 const favoriteInputElement = (element) => element.querySelector(`.point__favorite-input`);
 const offersWrapperElement = (element) => element.querySelector(`.point__offers-wrap`);
 
-const escapeKeyCode = 27;
+const ESC_BUTTON = 27;
 
 class OpenedTripPoint extends TripComponent {
   constructor(tripPoint, destinations, offers) {
@@ -87,7 +87,7 @@ class OpenedTripPoint extends TripComponent {
   }
 
   _onEscapeKeyPress(evt) {
-    if (evt.keyCode === escapeKeyCode && typeof this._onEscape === `function`) {
+    if (evt.keyCode === ESC_BUTTON && typeof this._onEscape === `function`) {
       this._onEscape();
     }
   }
