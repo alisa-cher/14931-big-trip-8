@@ -1,13 +1,13 @@
 import {basicTravelPointTemplate} from './trip-template';
-import Component from './../component';
+import TripComponent from './component';
 
-class TripPoint extends Component {
-  constructor(data) {
-    super(data);
+class TripPoint extends TripComponent {
+  constructor(tripPoint) {
+    super(tripPoint);
   }
 
   get template() {
-    return basicTravelPointTemplate(this._data);
+    return basicTravelPointTemplate(this._tripPoint);
   }
 
   set onEdit(fn) {

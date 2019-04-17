@@ -1,19 +1,61 @@
 import {extendedTravelPointTemplate} from './trip-template';
-import {formElement, deleteButton} from './helpers';
-import {capitalizeFirstLetter, lowercaseFirstLetter} from './../helpers';
-import Component from './../component';
+import TripComponent from './component';
 import flatpickr from './../../node_modules/flatpickr';
 import moment from './../../node_modules/moment';
+import {findIndexOfProperty} from './../helpers';
 
-class OpenedTripPoint extends Component {
-  constructor(data) {
-    super(data);
+const formElement = (element) => element.querySelector(`form`);
+const deleteButtonElement = (element) => element.querySelector(`.point__button--delete`);
+const saveButtonElement = (element) => element.querySelector(`.point__button--save`);
+const destinationInputElement = (element) => element.querySelector(`.point__destination-input`);
+const travelWaySelectElement = (element) => element.querySelector(`.travel-way__select`);
+const favoriteInputElement = (element) => element.querySelector(`.point__favorite-input`);
+const offersWrapperElement = (element) => element.querySelector(`.point__offers-wrap`);
+
+const ESC_BUTTON = 27;
+
+class OpenedTripPoint extends TripComponent {
+  constructor(tripPoint, destinations, offers) {
+    super(tripPoint);
+    this._destinations = destinations;
+    this._offersForAllDestinations = offers;
     this._onSubmit = null;
     this._onDelete = null;
+    this._onEscape = null;
+  }
+
+  _processForm(formData) {
+
+    const entry = {
+      travelType: ``,
+      destination: {
+        name: ``,
+      },
+      time: {
+        departure: ``,
+        arrival: ``,
+      },
+      price: ``
+    };
+
+    const tripEditMapper = OpenedTripPoint.createMapper(entry);
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+      if (tripEditMapper[property]) {
+        tripEditMapper[property](value);
+      }
+    }
+
+    entry.offers = this._tripPoint.offers;
+    entry.destination.pictures = this._tripPoint.destination.pictures;
+    entry.destination.description = this._tripPoint.destination.description;
+    entry.isFavorite = this._tripPoint.isFavorite;
+
+    return entry;
   }
 
   get template() {
-    return extendedTravelPointTemplate(this._data);
+    return extendedTravelPointTemplate(this._tripPoint, this._destinations);
   }
 
   set onSubmit(fn) {
@@ -24,48 +66,38 @@ class OpenedTripPoint extends Component {
     this._onDelete = fn;
   }
 
+  set onEscape(fn) {
+    this._onEscape = fn;
+  }
+
   static createMapper(target) {
     return {
-      destination: (value) => (target.city = value),
-      travelway: (value) => (target.travelType = capitalizeFirstLetter(value)),
+      destination: (value) => (target.destination.name = value),
+      travelway: (value) => (target.travelType = value),
       departureTime: (value) => (target.time.departure = moment(value.split(` `)[0], `HH:mm`).unix()),
       arrivalTime: (value) => (target.time.arrival = moment(value.split(` `)[0], `HH:mm`).unix()),
-      price: (value) => (target.price = value),
-      offer: (value) => (target.offers.add(capitalizeFirstLetter(value.replace(/-/g, ` `)))),
+      price: (value) => (target.price = value)
     };
   }
 
-  _processForm(formData) {
-    const entry = {
-      travelType: ``,
-      city: ``,
-      time: {
-        departure: ``,
-        arrival: ``,
-      },
-      price: ``,
-      offers: new Set(),
-    };
-
-    const tripEditMapper = OpenedTripPoint.createMapper(entry);
-    for (const pair of formData.entries()) {
-      const [property, value] = pair;
-      if (tripEditMapper[property]) {
-        tripEditMapper[property](value);
-      }
-    }
-    return entry;
+  _getFormData() {
+    const formData = new FormData(formElement(this._element));
+    return this._processForm(formData);
   }
 
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
-    const formData = new FormData(this._element.querySelector(`.point form`));
-    const newData = this._processForm(formData);
-
-    if (typeof this._onSubmit === `function`) {
-      this._onSubmit(newData);
+    if (this._validateChosenDestination(destinationInputElement(this._element), destinationInputElement(this._element).value)) {
+      if (typeof this._onSubmit === `function`) {
+        this._onSubmit(this._getFormData());
+      }
     }
-    this.update(newData);
+  }
+
+  _onEscapeKeyPress(evt) {
+    if (evt.keyCode === ESC_BUTTON && typeof this._onEscape === `function`) {
+      this._onEscape();
+    }
   }
 
   _onDeleteButtonClick(evt) {
@@ -75,17 +107,60 @@ class OpenedTripPoint extends Component {
     }
   }
 
+  _findIndexOfNewTravelType(travelType) {
+    return findIndexOfProperty(this._offersForAllDestinations, `type`, travelType);
+  }
+
+  _findIndexOfChosenDestination(destination) {
+    return this._destinations.map((item) => item.destination.name).indexOf(destination);
+  }
+
+  _validateChosenDestination(element, destination) {
+    if (this._findIndexOfChosenDestination(destination) > -1) {
+      element.setCustomValidity(``);
+      return true;
+    } else {
+      element.setCustomValidity(`Unfortunately, this destination is not available. Please, choose another one.`);
+      return false;
+    }
+  }
+
+  _findIndexOfChosenOffer(offer) {
+    return findIndexOfProperty(this._tripPoint.offers, `title`, offer);
+  }
+
+  _onOffersSelect(evt) {
+    const chosenOffer = this._tripPoint.offers[this._findIndexOfChosenOffer(evt.target.value)];
+    chosenOffer.accepted = !chosenOffer.accepted;
+  }
+
+  _mapOffers(travelType) {
+    const newOffers = this._offersForAllDestinations[this._findIndexOfNewTravelType(travelType)].offers;
+    return newOffers.map((offer) => ({title: offer.name, price: offer.price, accepted: false}));
+  }
+
   _onSelectTravelWayChange(evt) {
     evt.preventDefault();
-    const formData = new FormData(this._element.querySelector(`.point form`));
-    const newData = this._processForm(formData);
-    this._data.travelType = capitalizeFirstLetter(evt.target.value);
-    this.update(newData);
+    this.update(this._getFormData());
+    this._tripPoint.travelType = evt.target.value;
+    this._tripPoint.offers = this._mapOffers(evt.target.value);
     this._partialUpdate();
   }
 
+  _onDestinationChange(evt) {
+    if (this._validateChosenDestination(evt.target, evt.target.value)) {
+      this.update(this._getFormData());
+      this._tripPoint.destination = this._destinations[this._findIndexOfChosenDestination(evt.target.value)].destination;
+      this._partialUpdate();
+    }
+  }
+
+  _onIsFavoriteChange() {
+    this._tripPoint.isFavorite = !this._tripPoint.isFavorite;
+  }
+
   _checkActiveTravelType() {
-    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + lowercaseFirstLetter(this._data.travelType)}`);
+    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + this._tripPoint.travelType}`);
     travelTypeInput.checked = true;
   }
 
@@ -105,16 +180,56 @@ class OpenedTripPoint extends Component {
 
   bind() {
     formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    deleteButton(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
-    this._element.querySelector(`.travel-way__select`).addEventListener(`change`, this._onSelectTravelWayChange.bind(this));
+    deleteButtonElement(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
+    travelWaySelectElement(this._element).addEventListener(`change`, this._onSelectTravelWayChange.bind(this));
+    destinationInputElement(this._element).addEventListener(`change`, this._onDestinationChange.bind(this));
+    favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
+    offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
     flatpickr(this._element.querySelectorAll(`.point__time input`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
+    document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
   }
 
   unbind() {
     formElement(this._element).removeEventListener(`submit`, this._onSubmitButtonClick.bind(this));
-    deleteButton(this._element).removeEventListener(`click`, this._onDeleteButtonClick.bind(this));
-    this._element.querySelector(`.travel-way__select`).removeEventListener(`change`, this._onSelectTravelWayChange.bind(this));
+    deleteButtonElement(this._element).removeEventListener(`click`, this._onDeleteButtonClick.bind(this));
+    travelWaySelectElement(this._element).removeEventListener(`change`, this._onSelectTravelWayChange.bind(this));
+    destinationInputElement(this._element).removeEventListener(`change`, this._onDestinationChange.bind(this));
+    favoriteInputElement(this._element).removeEventListener(`change`, this._onIsFavoriteChange.bind(this));
+    offersWrapperElement(this._element).removeEventListener(`change`, this._onOffersSelect.bind(this));
+    document.removeEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
   }
+
+  blockForm() {
+    saveButtonElement(this._element).disabled = true;
+    deleteButtonElement(this._element).disabled = true;
+  }
+
+  unlockForm() {
+    saveButtonElement(this._element).disabled = false;
+    saveButtonElement(this._element).disabled = false;
+  }
+
+  changeFormBorder(border) {
+    this._element.style.border = border;
+  }
+
+  modifySaveButtonText(text) {
+    saveButtonElement(this._element).innerHTML = text;
+  }
+
+  modifyDeleteButtonText(text) {
+    deleteButtonElement(this._element).innerHTML = text;
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
 }
 
 export default OpenedTripPoint;

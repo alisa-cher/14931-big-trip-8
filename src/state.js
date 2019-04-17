@@ -3,7 +3,10 @@ class State {
     this._stateTrips = [];
     this._stateOpenedTrips = [];
     this._stateData = [];
+    this._destinations = [];
     this._filters = {};
+    this._offers = {};
+    this._filteredTrips = [];
   }
 
   get data() {
@@ -12,6 +15,30 @@ class State {
 
   setData(array) {
     this._stateData = array;
+  }
+
+  setFilteredTrips(array) {
+    this._filteredTrips = array;
+  }
+
+  get filteredTrips() {
+    return this._filteredTrips;
+  }
+
+  setDestinations(array) {
+    this._destinations = array;
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
+  }
+
+  get destinations() {
+    return this._destinations;
+  }
+
+  get offers() {
+    return this._offers;
   }
 
   get trips() {

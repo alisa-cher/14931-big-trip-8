@@ -1,22 +1,23 @@
-import {generateOffers, generatePictures} from './helpers';
-import {travelIcons} from './../data';
+import {capitalizeFirstLetter} from './../helpers';
+import {travelIcons} from './data';
 import moment from './../../node_modules/moment';
+import {getDurationInHoursAndMinutes} from './../helpers';
 
 const basicTravelPointTemplate = (travel) => `
           <i class="trip-icon">${travelIcons[travel.travelType]}</i>
-          <h3 class="trip-point__title">${travel.travelType + ` to ` + travel.city}</h3>
+          <h3 class="trip-point__title">${capitalizeFirstLetter(travel.travelType) + ` to ` + travel.destination.name}</h3>
           <p class="trip-point__schedule">
             <span class="trip-point__timetable">
                 ${moment.unix(travel.time.departure).format(`HH:mm`) + ` - ` + moment.unix(travel.time.arrival).format(`HH:mm`)}
             </span>
             <span class="trip-point__duration">
-                ${(moment.unix(travel.time.arrival - travel.time.departure).format(`h[H] mm[M]`))}
+                ${getDurationInHoursAndMinutes(travel.time.arrival - travel.time.departure)}
             </span>
           </p>
           <p class="trip-point__price">${travel.price} €</p>
           <ul class="trip-point__offers">${generateOffers(travel.offers)}</ul>`;
 
-const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
+const extendedTravelPointTemplate = (travel, destinations) => `<form action="" method="get">
     <header class="point__header">
       <label class="point__date">
         choose day
@@ -55,13 +56,8 @@ const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
 
       <div class="point__destination-wrap">
         <label class="point__destination-label" for="destination">${travel.travelType}</label>
-        <input class="point__destination-input" list="destination-select" id="destination" value="${travel.city}" name="destination">
-        <datalist id="destination-select">
-          <option value="airport"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
-          <option value="hotel"></option>
-        </datalist>
+        <input class="point__destination-input" list="destination-select" id="destination" value="${travel.destination.name}" name="destination">
+        <datalist id="destination-select">${getDestinationsTemplate(destinations)}</datalist>
       </div>
 
       <label class="point__time point__time--hyphen">
@@ -73,11 +69,13 @@ const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
         choose time
         <input class="point__input" type="text" value="${moment.unix(travel.time.arrival).format(`HH:mm`)}" name="arrivalTime" placeholder="00:00">
       </label>
+      
+      
 
       <label class="point__price">
         write price
         <span class="point__price-currency">€</span>
-        <input class="point__input" type="text" value="${travel.price}" name="price">
+        <input class="point__input" type="number" min="1" value="${travel.price}" name="price">
       </label>
 
       <div class="point__buttons">
@@ -86,47 +84,38 @@ const extendedTravelPointTemplate = (travel) => `<form action="" method="get">
       </div>
 
       <div class="paint__favorite-wrap">
-        <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite">
+        <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" ${travel.isFavorite ? `checked` : ``} name="favorite">
         <label class="point__favorite" for="favorite">favorite</label>
       </div>
     </header>
 
     <section class="point__details">
       <section class="point__offers">
-        <h3 class="point__details-title">offers</h3>
-
-        <div class="point__offers-wrap">
-          <input class="point__offers-input visually-hidden" type="checkbox" id="add-luggage" name="offer" value="add-luggage">
-          <label for="add-luggage" class="point__offers-label">
-            <span class="point__offer-service">Add luggage</span> + €<span class="point__offer-price">30</span>
-          </label>
-
-          <input class="point__offers-input visually-hidden" type="checkbox" id="switch-to-comfort-class" name="offer" value="switch-to-comfort-class">
-          <label for="switch-to-comfort-class" class="point__offers-label">
-            <span class="point__offer-service">Switch to comfort class</span> + €<span class="point__offer-price">100</span>
-          </label>
-
-          <input class="point__offers-input visually-hidden" type="checkbox" id="add-meal" name="offer" value="add-meal">
-          <label for="add-meal" class="point__offers-label">
-            <span class="point__offer-service">Add meal </span> + €<span class="point__offer-price">15</span>
-          </label>
-
-          <input class="point__offers-input visually-hidden" type="checkbox" id="choose-seats" name="offer" value="choose-seats">
-          <label for="choose-seats" class="point__offers-label">
-            <span class="point__offer-service">Choose seats</span> + €<span class="point__offer-price">5</span>
-          </label>
-        </div>
+         ${travel.offers.length ? `<h3 class="point__details-title">offers</h3>` : ``}
+        <div class="point__offers-wrap"> ${extendedOffersTemplate(travel.offers)}</div>
 
       </section>
       <section class="point__destination">
         <h3 class="point__details-title">Destination</h3>
-        <p class="point__destination-text">${travel.description ? travel.description : ` `}</p>
+        <p class="point__destination-text">${travel.destination.description ? travel.destination.description : ` `}</p>
         <div class="point__destination-images">
-          ${travel.pictures ? generatePictures(travel.pictures) : ` `}
+          ${travel.destination.pictures ? generatePictures(travel.destination.pictures) : ` `}
         </div>
       </section>
       <input type="hidden" class="point__total-price" name="total-price" value="">
     </section>
   </form>`;
+
+const generateOffers = (offers) => [...offers].slice(0, 3).map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
+
+const generatePictures = (pictures) => pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``);
+
+
+const extendedOffersTemplate = (offers) => offers.map((offer) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}"
+name="offer" ${offer.accepted ? `checked` : ``} value="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}"> <label for="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}" class="point__offers-label">
+<span class="point__offer-service">${offer.title}</span> + €<span class="point__offer-price"> ${offer.price} </span>
+</label>`).join(``);
+
+const getDestinationsTemplate = (destinations) => destinations.map((destination) => `<option value="${destination.destination.name}"></option>`).join(``);
 
 export {basicTravelPointTemplate, extendedTravelPointTemplate};
