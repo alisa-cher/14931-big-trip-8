@@ -1,17 +1,17 @@
-import {bindMenuEvents} from './menu';
-import {bindNewEventClick, newTripData} from './new-event';
+import API from './data/api';
 import OpenedTripPoint from './trip/trip-opened';
 import AllFilters from './filter/filters-container';
-import {TripsContainer, tripWrapper, tripDaysWrapper, itemsWrapper} from './trip/trips-container';
-import {dataFilters} from './filter/data';
-import {state} from './state';
 import StatisticsContainer from './statistics/statistics-container';
 import SortingPanelContainer from './sorting-panel/sorting-panel-container';
-import API from './data/api';
 import {ModelTrip} from './data/model-trip';
-import {calcTripPointsPrices} from './total-price/total-price-service';
 import TotalPrice from './total-price/total-price';
 import TripDay from './trip/trip-day';
+import {TripsContainer, tripDaysWrapper, itemsWrapper} from './trip/trips-container';
+import {bindMenuEvents} from './menu';
+import {bindNewEventClick, newTripData} from './new-event';
+import {calcTripPointsPrices} from './total-price/total-price-service';
+import {dataFilters} from './filter/data';
+import {state} from './state';
 
 const menuElement = document.querySelector(`.menu`);
 
@@ -44,10 +44,9 @@ const init = () => {
 
       trips = new TripsContainer(tripPoints, destinations, offers);
       trips.init();
-      
+
       statistics = new StatisticsContainer(tripPoints);
       statistics.init();
-      debugger;
 
       filters = new AllFilters(dataFilters);
       filters.init();
@@ -60,8 +59,7 @@ const init = () => {
         filters.destroy();
       }, () => filters.init());
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       tripDaysWrapper.appendChild(TripsContainer.renderMessage(messages.ERROR));
     });
 

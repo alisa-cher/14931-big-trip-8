@@ -2,15 +2,12 @@ import TripPoint from './trip';
 import OpenedTripPoint from './trip-opened';
 import TripDay from './trip-day';
 import {ModelTrip} from "../data/model-trip";
+import {addTripDayProperty, groupDataByTripDay} from './trip-day-service';
 import {state} from '../state';
 import {api} from './../main';
-import {addTripDayProperty, groupDataByTripDay} from './trip-day-service';
 
-// враппер для секции дня с путешествиями
-const tripWrapper = document.querySelector(`.trip-day__items`);
+
 const itemsWrapper = (tripDayElement) => tripDayElement.querySelector(`.trip-day__items`);
-
-// раппер для абсолютно всех дней
 const tripDaysWrapper = document.querySelector(`.trip-points`);
 
 class TripsContainer {
@@ -65,7 +62,6 @@ class TripsContainer {
       this.initOpenedTrip(trip, openedTrip, editedTrip, tripDayElement);
       state.setOpenedTrips(element);
       openedTrip.render();
-      debugger;
       itemsWrapper(tripDayElement).replaceChild(openedTrip.element, trip.element);
       trip.unrender();
     };
@@ -89,13 +85,11 @@ class TripsContainer {
       api.updateTrip({id: editedTrip.id, data: ModelTrip.toRAW(formData)})
         .then((newTripPointData) => {
           const newTrip = new TripPoint(newTripPointData);
-          debugger;
           this.initTripPoint(newTrip, newTripPointData, tripDayElement);
           itemsWrapper(tripDayElement).replaceChild(newTrip.render(), openedTrip.element);
           openedTrip.unrender();
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           openedTrip.shake();
           openedTrip.changeFormBorder(`3px solid red`);
           openedTrip.unlockForm();
@@ -130,4 +124,4 @@ class TripsContainer {
   }
 }
 
-export {TripsContainer, tripDaysWrapper, tripWrapper, itemsWrapper};
+export {TripsContainer, tripDaysWrapper, itemsWrapper};
