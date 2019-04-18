@@ -112,7 +112,7 @@ const generatePictures = (pictures) => pictures.map((picture) => `<img src="${pi
 
 
 const extendedOffersTemplate = (offers) => offers.map((offer) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}"
-name="offer" ${offer.accepted ? `checked` : ``} value="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}"> <label for="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}" class="point__offers-label">
+name="offer" ${offer.accepted ? `checked` : ``} value="${capitalizeFirstLetter(offer.title)}"> <label for="${capitalizeFirstLetter(offer.title.replace(/-/g, ` `))}" class="point__offers-label">
 <span class="point__offer-service">${offer.title}</span> + €<span class="point__offer-price"> ${offer.price} </span>
 </label>`).join(``);
 

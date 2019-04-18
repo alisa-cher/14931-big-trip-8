@@ -1,51 +1,83 @@
 import TripPoint from './trip';
 import OpenedTripPoint from './trip-opened';
+import TripDay from './trip-day';
+import {ModelTrip} from "../data/model-trip";
 import {state} from '../state';
 import {api} from './../main';
-import {ModelTrip} from "../data/model-trip";
+import {addTripDayProperty, groupDataByTripDay} from './trip-day-service';
 
+// враппер для секции дня с путешествиями
 const tripWrapper = document.querySelector(`.trip-day__items`);
+const itemsWrapper = (tripDayElement) => tripDayElement.querySelector(`.trip-day__items`);
+
+// раппер для абсолютно всех дней
+const tripDaysWrapper = document.querySelector(`.trip-points`);
 
 class TripsContainer {
   constructor(tripPoints, destinations, offers) {
     this._tripPoints = tripPoints;
     this._destinations = destinations;
     this._offers = offers;
+    this._messageElement = null;
   }
 
   update(data) {
     this._tripPoints = data;
   }
 
-  init() {
-    this._tripPoints.forEach((element) => {
+  static renderMessage(message) {
+    tripDaysWrapper.innerHTML = ``;
+    this._messageElement = document.createElement(`p`);
+    this._messageElement.classList.add(`trip-points__message`);
+    this._messageElement.innerHTML = message;
+    return this._messageElement;
+  }
+
+  initTripsDay(data, tripDayElement) {
+    data.forEach((element) => {
       const trip = new TripPoint(element);
-      tripWrapper.appendChild(trip.render());
-      state.setTrips(trip);
-      this.initTripPoint(trip, element);
+      itemsWrapper(tripDayElement).appendChild(trip.render());
+      this.initTripPoint(trip, element, tripDayElement);
     });
   }
 
-  initTripPoint(trip, element) {
-    trip.onEdit = () => {
-      const editedTrip = element.copy();
-      const openedTrip = new OpenedTripPoint(editedTrip, this._destinations, this._offers);
-      this.initOpenedTrip(trip, openedTrip, editedTrip);
+  initAllTripsDays() {
+    const tripPointsWithDayProperty = addTripDayProperty(this._tripPoints);
+    const sortedByDayTrips = groupDataByTripDay(tripPointsWithDayProperty, `day`);
 
+    return Object.keys(sortedByDayTrips).forEach(function (index, date) {
+      const trips = sortedByDayTrips[index];
+      const tripDay = new TripDay(date, index);
+      tripDay.render();
+      this.initTripsDay(trips, tripDay.element);
+      tripDaysWrapper.appendChild(tripDay.element);
+    }.bind(this));
+  }
+
+  init() {
+    this.initAllTripsDays();
+  }
+
+  initTripPoint(trip, element, tripDayElement) {
+    trip.onEdit = () => {
+      const editedTrip = ModelTrip.copy(element);
+      const openedTrip = new OpenedTripPoint(editedTrip, this._destinations, this._offers);
+      this.initOpenedTrip(trip, openedTrip, editedTrip, tripDayElement);
       state.setOpenedTrips(element);
       openedTrip.render();
-      tripWrapper.replaceChild(openedTrip.element, trip.element);
+      debugger;
+      itemsWrapper(tripDayElement).replaceChild(openedTrip.element, trip.element);
       trip.unrender();
     };
   }
 
-  initOpenedTrip(trip, openedTrip, editedTrip) {
+  initOpenedTrip(trip, openedTrip, editedTrip, tripDayElement) {
     openedTrip.onEscape = () => {
       if (!openedTrip.element) {
         openedTrip.unrender();
       } else {
-        tripWrapper.appendChild(trip.render());
-        tripWrapper.replaceChild(trip.element, openedTrip.element);
+        itemsWrapper(tripDayElement).appendChild(trip.render());
+        itemsWrapper(tripDayElement).replaceChild(trip.element, openedTrip.element);
         openedTrip.unrender();
       }
     };
@@ -57,11 +89,13 @@ class TripsContainer {
       api.updateTrip({id: editedTrip.id, data: ModelTrip.toRAW(formData)})
         .then((newTripPointData) => {
           const newTrip = new TripPoint(newTripPointData);
-          this.initTripPoint(newTrip, newTripPointData);
-          tripWrapper.replaceChild(newTrip.render(), openedTrip.element);
+          debugger;
+          this.initTripPoint(newTrip, newTripPointData, tripDayElement);
+          itemsWrapper(tripDayElement).replaceChild(newTrip.render(), openedTrip.element);
           openedTrip.unrender();
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err);
           openedTrip.shake();
           openedTrip.changeFormBorder(`3px solid red`);
           openedTrip.unlockForm();
@@ -82,18 +116,18 @@ class TripsContainer {
         .then(() => api.getTrips())
         .then((tripPoints) => state.setData(tripPoints))
         .then(() => {
-          tripWrapper.removeChild(openedTrip.element);
+          itemsWrapper(tripDayElement).removeChild(openedTrip.element);
           openedTrip.unrender();
         });
     };
   }
 
   remove() {
-    tripWrapper.innerHTML = ``;
+    tripDaysWrapper.innerHTML = ``;
     state.trips.forEach((trip) => {
       trip.unrender();
     });
   }
 }
 
-export {TripsContainer, tripWrapper};
+export {TripsContainer, tripDaysWrapper, tripWrapper, itemsWrapper};

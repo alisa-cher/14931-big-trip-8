@@ -22,7 +22,6 @@ const calcTripPointPrice = (tripPointData) => {
   return offersArray.length ? tripPointData.price + getTotalOffersCost(offersArray) : tripPointData.price;
 };
 
-
 const getDurationInHoursAndMinutes = (duration) => {
   const hours = Math.floor(moment.duration(duration).asHours());
   const minutes = moment.duration(duration).minutes();
