@@ -1,7 +1,6 @@
 import {extendedTravelPointTemplate} from './trip-template';
 import TripComponent from './component';
 import flatpickr from './../../node_modules/flatpickr';
-import moment from './../../node_modules/moment';
 import {findIndexOfProperty} from './../helpers';
 
 const formElement = (element) => element.querySelector(`form`);
@@ -74,8 +73,8 @@ class OpenedTripPoint extends TripComponent {
     return {
       destination: (value) => (target.destination.name = value),
       travelway: (value) => (target.travelType = value),
-      departureTime: (value) => (target.time.departure = moment(value.split(` `)[0], `HH:mm`).unix()),
-      arrivalTime: (value) => (target.time.arrival = moment(value.split(` `)[0], `HH:mm`).unix()),
+      departureTime: (value) => (target.time.departure = value),
+      arrivalTime: (value) => (target.time.arrival = value),
       price: (value) => (target.price = value)
     };
   }
@@ -178,6 +177,15 @@ class OpenedTripPoint extends TripComponent {
     return this._element;
   }
 
+  get timepickerConfigs() {
+    return {
+      enableTime: true,
+      dateFormat: `u`,
+      altInput: true,
+      altFormat: `H:i`,
+    };
+  }
+
   bind() {
     formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
     deleteButtonElement(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
@@ -186,7 +194,8 @@ class OpenedTripPoint extends TripComponent {
     favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
     offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
     document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
-    flatpickr(this._element.querySelectorAll(`.point__time input`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
+    flatpickr(this._element.querySelector(`input[name="departureTime"]`), this.timepickerConfigs);
+    flatpickr(this._element.querySelector(`input[name="arrivalTime"]`), this.timepickerConfigs);
   }
 
   unbind() {
