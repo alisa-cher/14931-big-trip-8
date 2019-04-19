@@ -2,9 +2,10 @@ import TripPoint from './trip';
 import OpenedTripPoint from './trip-opened';
 import TripDay from './trip-day';
 import {ModelTrip} from "../data/model-trip";
-import {addTripDayProperty, groupDataByTripDay} from './trip-day-service';
+import TotalPrice from './../total-price/total-price';
+import {groupTripsByDay} from './trip-day-service';
+import {api, menuElement} from './../main';
 import {state} from '../state';
-import {api} from './../main';
 
 
 const itemsWrapper = (tripDayElement) => tripDayElement.querySelector(`.trip-day__items`);
@@ -38,13 +39,12 @@ class TripsContainer {
     });
   }
 
-  initAllTripsDays() {
-    const tripPointsWithDayProperty = addTripDayProperty(this._tripPoints);
-    const sortedByDayTrips = groupDataByTripDay(tripPointsWithDayProperty, `day`);
-
-    return Object.keys(sortedByDayTrips).forEach(function (index, date) {
+  initAllTripsDays(data) {
+    const sortedByDayTrips = groupTripsByDay(data);
+    return Object.keys(sortedByDayTrips).forEach(function (index) {
+      const dayCounter = state.tripDates.findIndex((element) => (element === index));
       const trips = sortedByDayTrips[index];
-      const tripDay = new TripDay(date, index);
+      const tripDay = new TripDay(dayCounter, index);
       tripDay.render();
       this.initTripsDay(trips, tripDay.element);
       tripDaysWrapper.appendChild(tripDay.element);
@@ -52,7 +52,7 @@ class TripsContainer {
   }
 
   init() {
-    this.initAllTripsDays();
+    this.initAllTripsDays(this._tripPoints);
   }
 
   initTripPoint(trip, element, tripDayElement) {
@@ -60,7 +60,6 @@ class TripsContainer {
       const editedTrip = ModelTrip.copy(element);
       const openedTrip = new OpenedTripPoint(editedTrip, this._destinations, this._offers);
       this.initOpenedTrip(trip, openedTrip, editedTrip, tripDayElement);
-      state.setOpenedTrips(element);
       openedTrip.render();
       itemsWrapper(tripDayElement).replaceChild(openedTrip.element, trip.element);
       trip.unrender();
@@ -84,9 +83,16 @@ class TripsContainer {
 
       api.updateTrip({id: editedTrip.id, data: ModelTrip.toRAW(formData)})
         .then((newTripPointData) => {
+          state.data[newTripPointData.id].price = +newTripPointData.price;
+
+          const newTotalPrice = new TotalPrice(state.data);
+          menuElement.replaceChild(newTotalPrice.render(), state.totalPriceInstance.element);
+          state.setTotalPriceInstance(newTotalPrice);
+
           const newTrip = new TripPoint(newTripPointData);
           this.initTripPoint(newTrip, newTripPointData, tripDayElement);
           itemsWrapper(tripDayElement).replaceChild(newTrip.render(), openedTrip.element);
+
           openedTrip.unrender();
         })
         .catch(() => {
@@ -108,10 +114,11 @@ class TripsContainer {
           openedTrip.modifyDeleteButtonText(`Delete`);
         })
         .then(() => api.getTrips())
-        .then((tripPoints) => state.setData(tripPoints))
-        .then(() => {
-          itemsWrapper(tripDayElement).removeChild(openedTrip.element);
-          openedTrip.unrender();
+        .then((tripPoints) => {
+          state.setTripDates(tripPoints);
+          state.setData(tripPoints);
+          this.remove();
+          this.initAllTripsDays(state.data);
         });
     };
   }

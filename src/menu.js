@@ -1,3 +1,5 @@
+import {disableNewEventButton, unlockNewEventButton} from './new-event';
+
 const menuItemElements = document.querySelectorAll(`.view-switch__item`);
 const activeMenuItemClass = `view-switch__item--active`;
 const tableWrapperElement = document.querySelector(`#table`);
@@ -19,10 +21,12 @@ const handleMenuElementClick = (evt, cb, anotherCb) => {
 
   if (isStatisticsMenuItem(evt.target)) {
     cb();
+    disableNewEventButton();
     hideElement(tableWrapperElement);
     showElement(statisticsWrapperElement);
   } else {
     anotherCb();
+    unlockNewEventButton();
     hideElement(statisticsWrapperElement);
     showElement(tableWrapperElement);
   }

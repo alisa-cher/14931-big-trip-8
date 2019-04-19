@@ -160,7 +160,7 @@ class OpenedTripPoint extends TripComponent {
   }
 
   _checkActiveTravelType() {
-    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + this._tripPoint.travelType}`);
+    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + this._tripPoint.travelType + `-` + this._tripPoint.id}`);
     travelTypeInput.checked = true;
   }
 
@@ -185,8 +185,8 @@ class OpenedTripPoint extends TripComponent {
     destinationInputElement(this._element).addEventListener(`change`, this._onDestinationChange.bind(this));
     favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
     offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
-    flatpickr(this._element.querySelectorAll(`.point__time input`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
     document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
+    flatpickr(this._element.querySelectorAll(`.point__time input`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
   }
 
   unbind() {

@@ -4,11 +4,15 @@ const addTripDayProperty = (arr) => arr.map((trip) => {
   return Object.assign({}, trip, {day: moment(trip.time.arrival).format(`DD MMM`)});
 });
 
-const groupDataByTripDay = (xs, day) => {
-  return xs.reduce((rv, x) => {
-    (rv[x[day]] = rv[x[day]] || []).push(x);
-    return rv;
+const groupDataByProperty = (arr, key) => {
+  return arr.reduce((previousObj, currentObj) => {
+    (previousObj[currentObj[key]] = previousObj[currentObj[key]] || []).push(currentObj);
+    return previousObj;
   }, {});
 };
 
-export {addTripDayProperty, groupDataByTripDay};
+const groupTripsByDay = (trips) => {
+  return groupDataByProperty(addTripDayProperty(trips), `day`);
+};
+
+export {addTripDayProperty, groupTripsByDay};

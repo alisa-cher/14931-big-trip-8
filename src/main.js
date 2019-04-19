@@ -9,11 +9,10 @@ import TripDay from './trip/trip-day';
 import {TripsContainer, tripDaysWrapper, itemsWrapper} from './trip/trips-container';
 import {bindMenuEvents} from './menu';
 import {bindNewEventClick, newTripData} from './new-event';
-import {calcTripPointsPrices} from './total-price/total-price-service';
 import {dataFilters} from './filter/data';
 import {state} from './state';
 
-const menuElement = document.querySelector(`.menu`);
+export const menuElement = document.querySelector(`.menu`);
 
 const AUTHORIZATION = `Basic deo0w590ik29889a=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
@@ -39,6 +38,7 @@ const init = () => {
       tripDaysWrapper.textContent = ``;
 
       state.setData(tripPoints);
+      state.setTripDates(tripPoints);
       state.setDestinations(destinations);
       state.setOffers(offers);
 
@@ -51,8 +51,9 @@ const init = () => {
       filters = new AllFilters(dataFilters);
       filters.init();
 
-      totalPrice = new TotalPrice(calcTripPointsPrices(state.data));
+      totalPrice = new TotalPrice(state.data);
       menuElement.appendChild(totalPrice.render());
+      state.setTotalPriceInstance(totalPrice);
 
       bindMenuEvents(() => {
         statistics.update(tripPoints);
