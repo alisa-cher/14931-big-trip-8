@@ -13,31 +13,7 @@ export class ModelTrip {
     this.price = data[`base_price`];
     this.offers = data[`offers`];
   }
-
-  // copy() {
-  //   return {
-  //     id: this.id,
-  //     isFavorite: this.isFavorite,
-  //     travelType: this.travelType,
-  //     time: {
-  //       departure: this.time.departure,
-  //       arrival: this.time.arrival,
-  //     },
-  //     destination: {
-  //       name: this.destination.name,
-  //       description: this.destination.description,
-  //       pictures: this.destination.pictures.map((picture) => picture),
-  //     },
-  //     price: this.price,
-  //     offers: this.offers.map((offer) => ({
-  //       title: offer.title,
-  //       price: offer.price,
-  //       accepted: offer.accepted
-  //     }))
-  //   };
-  // }
-
-  // modified
+  
   static copy(data) {
     return {
       id: data.id,
