@@ -13,7 +13,7 @@ export class ModelTrip {
     this.price = data[`base_price`];
     this.offers = data[`offers`];
   }
-  
+
   static copy(data) {
     return {
       id: data.id,
