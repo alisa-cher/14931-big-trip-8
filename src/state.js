@@ -1,3 +1,5 @@
+import {groupTripsByDay} from './trip/trip-day-service';
+
 class State {
   constructor() {
     this._stateTrips = [];
@@ -7,6 +9,8 @@ class State {
     this._filters = {};
     this._offers = {};
     this._filteredTrips = [];
+    this._totalPriceInstance = null;
+    this._tripDates = [];
   }
 
   get data() {
@@ -15,6 +19,22 @@ class State {
 
   setData(array) {
     this._stateData = array;
+  }
+
+  setTripDates(array) {
+    this._tripDates = Object.keys(groupTripsByDay(array));
+  }
+
+  get tripDates() {
+    return this._tripDates;
+  }
+
+  setTotalPriceInstance(obj) {
+    this._totalPriceInstance = obj;
+  }
+
+  get totalPriceInstance() {
+    return this._totalPriceInstance;
   }
 
   setFilteredTrips(array) {

@@ -14,22 +14,22 @@ export class ModelTrip {
     this.offers = data[`offers`];
   }
 
-  copy() {
+  static copy(data) {
     return {
-      id: this.id,
-      isFavorite: this.isFavorite,
-      travelType: this.travelType,
+      id: data.id,
+      isFavorite: data.isFavorite,
+      travelType: data.travelType,
       time: {
-        departure: this.time.departure,
-        arrival: this.time.arrival,
+        departure: data.time.departure,
+        arrival: data.time.arrival,
       },
       destination: {
-        name: this.destination.name,
-        description: this.destination.description,
-        pictures: this.destination.pictures.map((picture) => picture),
+        name: data.destination.name,
+        description: data.destination.description,
+        pictures: data.destination.pictures.map((picture) => picture),
       },
-      price: this.price,
-      offers: this.offers.map((offer) => ({
+      price: data.price,
+      offers: data.offers.map((offer) => ({
         title: offer.title,
         price: offer.price,
         accepted: offer.accepted

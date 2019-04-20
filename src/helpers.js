@@ -22,16 +22,33 @@ const calcTripPointPrice = (tripPointData) => {
   return offersArray.length ? tripPointData.price + getTotalOffersCost(offersArray) : tripPointData.price;
 };
 
-
 const getDurationInHoursAndMinutes = (duration) => {
-  const hours = Math.floor(moment.duration(duration).asHours());
+  const formatTime = (timeUnit) => timeUnit < 10 ? (`0` + timeUnit) : timeUnit;
+  const days = Math.floor(moment.duration(duration).asDays());
+  const hours = Math.floor(moment.duration(duration).hours());
   const minutes = moment.duration(duration).minutes();
-  const formattedMinutes = minutes < 10 ? (`0` + minutes) : minutes;
-  if (hours) {
-    return hours + `H ` + formattedMinutes + `M`;
-  } else {
-    return formattedMinutes + `M`;
-  }
+
+  const getDays = () => days ? formatTime(days) + `D` : ``;
+  const getHours = () => {
+    if (days) {
+      return formatTime(hours) + `H`;
+    } else {
+      return hours ? formatTime(hours) + `H` : ``;
+    }
+  };
+  const getMinutes = () => {
+    if (hours) {
+      return formatTime(minutes) + `M`;
+    } else {
+      return minutes ? formatTime(minutes) + `M` : ``;
+    }
+  };
+
+  const formattedMinutes = getMinutes();
+  const formattedDays = getDays();
+  const formattedHours = getHours();
+
+  return formattedDays + ` ` + formattedHours + ` ` + formattedMinutes;
 };
 
 export {getRandomInteger, getRandomElementFromArray, getRandomTimeStampWithinADay, capitalizeFirstLetter,

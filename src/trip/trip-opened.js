@@ -1,7 +1,6 @@
 import {extendedTravelPointTemplate} from './trip-template';
 import TripComponent from './component';
 import flatpickr from './../../node_modules/flatpickr';
-import moment from './../../node_modules/moment';
 import {findIndexOfProperty} from './../helpers';
 
 const formElement = (element) => element.querySelector(`form`);
@@ -74,8 +73,8 @@ class OpenedTripPoint extends TripComponent {
     return {
       destination: (value) => (target.destination.name = value),
       travelway: (value) => (target.travelType = value),
-      departureTime: (value) => (target.time.departure = moment(value.split(` `)[0], `HH:mm`).unix()),
-      arrivalTime: (value) => (target.time.arrival = moment(value.split(` `)[0], `HH:mm`).unix()),
+      departureTime: (value) => (target.time.departure = value),
+      arrivalTime: (value) => (target.time.arrival = value),
       price: (value) => (target.price = value)
     };
   }
@@ -160,7 +159,7 @@ class OpenedTripPoint extends TripComponent {
   }
 
   _checkActiveTravelType() {
-    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + this._tripPoint.travelType}`);
+    const travelTypeInput = this._element.querySelector(`${`#travel-way-` + this._tripPoint.travelType + `-` + this._tripPoint.id}`);
     travelTypeInput.checked = true;
   }
 
@@ -178,6 +177,35 @@ class OpenedTripPoint extends TripComponent {
     return this._element;
   }
 
+  get timepickerConfigs() {
+    return {
+      enableTime: true,
+      dateFormat: `u`,
+      altInput: true,
+      altFormat: `H:i`,
+    };
+  }
+
+  enableTimePickers() {
+    const endDatePickerConfigs = Object.assign({}, this.timepickerConfigs, {
+      onChange: (selectedDates, dateStr) => {
+        startDatePicker.set(`maxDate`, dateStr);
+      },
+    });
+
+    const startDatePickerConfigs = Object.assign({}, this.timepickerConfigs, {
+      onClose: () => {
+        endDatePicker.open(endDatePicker.element);
+      },
+      onChange: (selectedDates, dateStr) => {
+        endDatePicker.set(`minDate`, dateStr);
+        endDatePicker.setDate(dateStr);
+      },
+    });
+    const endDatePicker = flatpickr(this._element.querySelector(`input[name="arrivalTime"]`), endDatePickerConfigs);
+    const startDatePicker = flatpickr(this._element.querySelector(`input[name="departureTime"]`), startDatePickerConfigs);
+  }
+
   bind() {
     formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
     deleteButtonElement(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
@@ -185,8 +213,8 @@ class OpenedTripPoint extends TripComponent {
     destinationInputElement(this._element).addEventListener(`change`, this._onDestinationChange.bind(this));
     favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
     offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
-    flatpickr(this._element.querySelectorAll(`.point__time input`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`});
     document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
+    this.enableTimePickers();
   }
 
   unbind() {
