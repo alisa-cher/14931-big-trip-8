@@ -186,6 +186,26 @@ class OpenedTripPoint extends TripComponent {
     };
   }
 
+  enableTimePickers() {
+    const endDatePickerConfigs = Object.assign({}, this.timepickerConfigs, {
+      onChange: (selectedDates, dateStr) => {
+        startDatePicker.set(`maxDate`, dateStr);
+      },
+    });
+
+    const startDatePickerConfigs = Object.assign({}, this.timepickerConfigs, {
+      onClose: () => {
+        endDatePicker.open(endDatePicker.element);
+      },
+      onChange: (selectedDates, dateStr) => {
+        endDatePicker.set(`minDate`, dateStr);
+        endDatePicker.setDate(dateStr);
+      },
+    });
+    const endDatePicker = flatpickr(this._element.querySelector(`input[name="arrivalTime"]`), endDatePickerConfigs);
+    const startDatePicker = flatpickr(this._element.querySelector(`input[name="departureTime"]`), startDatePickerConfigs);
+  }
+
   bind() {
     formElement(this._element).addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
     deleteButtonElement(this._element).addEventListener(`click`, this._onDeleteButtonClick.bind(this));
@@ -194,8 +214,7 @@ class OpenedTripPoint extends TripComponent {
     favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
     offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
     document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
-    flatpickr(this._element.querySelector(`input[name="departureTime"]`), this.timepickerConfigs);
-    flatpickr(this._element.querySelector(`input[name="arrivalTime"]`), this.timepickerConfigs);
+    this.enableTimePickers();
   }
 
   unbind() {

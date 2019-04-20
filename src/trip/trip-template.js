@@ -8,7 +8,7 @@ const basicTravelPointTemplate = (travel) => `
           <h3 class="trip-point__title">${capitalizeFirstLetter(travel.travelType) + ` to ` + travel.destination.name}</h3>
           <p class="trip-point__schedule">
             <span class="trip-point__timetable">
-                ${moment.unix(travel.time.departure).format(`HH:mm`) + ` - ` + moment.unix(travel.time.arrival).format(`HH:mm`)}
+                ${moment.unix(travel.time.departure / 1000).format(`HH:mm`) + ` - ` + moment.unix(travel.time.arrival / 1000).format(`HH:mm`)}
             </span>
             <span class="trip-point__duration">
                 ${getDurationInHoursAndMinutes(travel.time.arrival - travel.time.departure)}
@@ -62,8 +62,8 @@ const extendedTravelPointTemplate = (travel, destinations) => `<form action="" m
       
       <div class="point__time">
         choose time
-        <input class="point__input" type="text" value="${travel.time.departure}" name="departureTime" placeholder="${moment.unix(travel.time.departure).format(`HH:mm`)}">
-        <input class="point__input" type="text" value="${travel.time.arrival}" name="arrivalTime" placeholder="${moment.unix(travel.time.arrival).format(`HH:mm`)}">
+        <input class="point__input" type="text" value="${travel.time.departure}" name="departureTime" placeholder="">
+        <input class="point__input" type="text" value="${travel.time.arrival}" name="arrivalTime" placeholder="">
       </div>
      
       <label class="point__price">
