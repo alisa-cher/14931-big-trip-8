@@ -8,7 +8,7 @@ class TotalPrice extends Component {
   }
 
   get template() {
-    return `Total: <span class="trip__total-cost">€ ${this._data}</span>`;
+    return `<p class="trip__total"> Total: <span class="trip__total-cost">€ ${this._data}</span></p>`;
   }
 
   set onUpdate(fn) {
@@ -22,8 +22,7 @@ class TotalPrice extends Component {
   }
 
   render() {
-    super.render(`p`);
-    this._element.classList.add(`trip__total`);
+    super.render();
     return this._element;
   }
 }

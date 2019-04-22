@@ -11,8 +11,9 @@ class SortingPanel extends Component {
   }
 
   get template() {
-    return filterNames.map((el) => `<input type="radio" name="trip-sorting" id="sorting-${el}" value="${el}">
+    const sortingInputs = () => filterNames.map((el) => `<input type="radio" name="trip-sorting" id="sorting-${el}" value="${el}">
     <label class="trip-sorting__item trip-sorting__item--${el}" for="sorting-${el}">${capitalizeFirstLetter(el)}</label>`).join(``) + `<span class="trip-sorting__item trip-sorting__item--offers">Offers</span>`;
+    return `<form class="trip-sorting">${sortingInputs()}</form>`;
   }
 
   set onChange(fn) {
@@ -35,8 +36,7 @@ class SortingPanel extends Component {
   }
 
   render() {
-    super.render(`form`);
-    this._element.classList.add(`trip-sorting`);
+    super.render();
     this._element.firstElementChild.checked = true;
     this.setActiveSort(`event`);
     return this._element;

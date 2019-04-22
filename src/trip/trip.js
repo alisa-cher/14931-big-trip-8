@@ -22,8 +22,7 @@ class TripPoint extends Component {
   }
 
   render() {
-    super.render(`article`);
-    this._element.classList.add(`trip-point`);
+    super.render();
     return this._element;
   }
 

@@ -9,8 +9,9 @@ class Filter extends Component {
 
   get template() {
     const arr = this._data;
-    return arr.map((el) => `<input type="radio" id="filter-${el.className}" name="filter" value="${el.className}" class="trip-filter__item--active">
+    const filtersInputs = () => arr.map((el) => `<input type="radio" id="filter-${el.className}" name="filter" value="${el.className}" class="trip-filter__item--active">
     <label class="trip-filter__item" for="filter-${el.className}">${el.name}</label>`).join(``);
+    return `<form class="trip-filter"> ${filtersInputs()} </form>`;
   }
 
   set onChange(fn) {
@@ -33,8 +34,7 @@ class Filter extends Component {
   }
 
   render() {
-    super.render(`form`);
-    this._element.classList.add(`trip-filter`);
+    super.render();
     this._element.firstElementChild.checked = true;
     this.setActiveFilter(`filter-everything`);
     return this._element;

@@ -15,9 +15,10 @@ class Component {
     return this._element;
   }
 
-  render(element) {
-    this._element = document.createElement(element);
-    this._element.innerHTML = this.template;
+  render() {
+    const templateElement = document.createElement(`template`);
+    templateElement.innerHTML = this.template;
+    this._element = templateElement.content.firstChild;
     this.bind();
     return this._element;
   }

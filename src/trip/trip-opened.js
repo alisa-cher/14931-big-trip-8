@@ -166,14 +166,17 @@ class OpenedTripPoint extends Component {
 
   _partialUpdate() {
     this.unbind();
-    this._element.innerHTML = this.template;
+    const templateElement = document.createElement(`template`);
+    templateElement.innerHTML = this.template;
+    this._elementCopy = templateElement.content.firstChild;
+    this._element.parentNode.replaceChild(this._elementCopy, this._element);
+    this._element = this._elementCopy;
     this._checkActiveTravelType();
     this.bind();
   }
 
   render() {
-    super.render(`article`);
-    this._element.classList.add(`point`);
+    super.render();
     this._checkActiveTravelType();
     return this._element;
   }

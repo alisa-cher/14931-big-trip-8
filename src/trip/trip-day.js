@@ -8,17 +8,15 @@ class TripDay extends Component {
   }
 
   get template() {
-    return `<article class="trip-day__info">
+    return `<section class="trip-day"><article class="trip-day__info">
         <span class="trip-day__caption">${this._day ? `Day` : ``}</span>
-        <p class="trip-day__number">${this._index >= 0 ? this._index++ : ``}</p>
+        <p class="trip-day__number">${this._index >= 0 ? ++this._index : ``}</p>
         <h2 class="trip-day__title">${this._day ? this._day : ``}</h2>
-      </article><div class="trip-day__items"></div>`;
+      </article><div class="trip-day__items"></div></section>`;
   }
 
   render() {
-    super.render(`section`);
-    this._element.classList.add(`trip-day`);
-    this._element.innerHTML = this.template;
+    super.render();
     return this._element;
   }
 }
