@@ -30,4 +30,7 @@ export const bindNewEventClick = (cb) => {
   newEventButtonElement.addEventListener(`click`, cb);
 };
 
-export {disableNewEventButton, unlockNewEventButton};
+export {
+  disableNewEventButton,
+  unlockNewEventButton
+};

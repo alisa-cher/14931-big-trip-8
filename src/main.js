@@ -1,33 +1,30 @@
 import API from './data/api';
-import OpenedTripPoint from './trip/trip-opened';
 import AllFilters from './filter/filters-container';
 import StatisticsContainer from './statistics/statistics-container';
 import SortingPanelContainer from './sorting-panel/sorting-panel-container';
 import TotalPrice from './total-price/total-price';
-import TripDay from './trip/trip-day';
-import {TripsContainer, tripDaysWrapper, itemsWrapper} from './trip/trips-container';
+import {TripsContainer, tripDaysWrapper} from './trip/trips-container';
 import {bindMenuEvents} from './menu';
-import {bindNewEventClick, newTripData} from './new-event';
+import {bindNewEventClick} from './new-event';
 import {dataFilters} from './filter/data';
 import {state} from './state';
 
-export const menuElement = document.querySelector(`.menu`);
+const menuElement = document.querySelector(`.menu`);
 
 const AUTHORIZATION = `Basic deo0w590ik29889a=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip`;
 
-export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
 const Message = {
   ERROR: `Something went wrong while loading your route info. </br> Check your connection or try again later`,
   LOADING: `Loading route...`,
 };
 
-export let trips;
-export let statistics;
-export let filters;
-export let totalPrice;
-
+let trips;
+let statistics;
+let filters;
+let totalPrice;
 
 const init = () => {
   tripDaysWrapper.appendChild(TripsContainer.renderMessage(Message.LOADING));
@@ -66,18 +63,20 @@ const init = () => {
   const sortPanel = new SortingPanelContainer();
   sortPanel.init();
 
-  const renderNewOpenedEvent = (newTripWrapper, newOpenedTrip) => {
-    tripDaysWrapper.insertBefore(newTripWrapper.render(), tripDaysWrapper.firstChild);
-    itemsWrapper(newTripWrapper.element).appendChild(newOpenedTrip.render());
-  };
-
   bindNewEventClick(() => {
-    const newOpenedTrip = new OpenedTripPoint(newTripData(), state.destinations, state.offers);
-    const newTripWrapper = new TripDay();
-    renderNewOpenedEvent(newTripWrapper, newOpenedTrip);
-    trips.initNewTrip(newOpenedTrip, newTripWrapper);
+    trips.initNewTrip();
     bindNewEventClick();
   });
 };
 
 init();
+
+export {
+  trips,
+  statistics,
+  filters,
+  totalPrice,
+  api,
+  menuElement
+};
+

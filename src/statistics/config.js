@@ -53,7 +53,6 @@ const getConfig = (obj) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          // function
           formatter: obj.formatter,
         }
       },
@@ -99,4 +98,9 @@ const getConfig = (obj) => {
   };
 };
 
-export {getConfig, transportChartConfigs, moneyChartConfigs, timeChartConfigs};
+export {
+  getConfig,
+  transportChartConfigs,
+  moneyChartConfigs,
+  timeChartConfigs
+};

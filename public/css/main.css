@@ -2,6 +2,7 @@
   --font: 'Montserrat', sans-serif;
   --font-size-big: 21px;
   --font-size-bigger: 17px;
+  --font-size-medium: 13px;
   --font-size-smaller: 13px;
 
   --text-color: #000;
@@ -281,6 +282,12 @@ input[type=radio]:checked + .trip-sorting__item {
   font-weight: 400;
   margin: 0;
   padding: 0;
+}
+
+.trip-day__title--big {
+  font-size: var(--font-size-bigger);
+  font-weight: 600;
+  margin-top: 5px;
 }
 
 

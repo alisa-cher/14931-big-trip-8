@@ -102,16 +102,36 @@ const extendedTravelPointTemplate = (travel, destinations) => `<article class="p
     </section>
   </form></article>`;
 
-const generateOffers = (offers) => [...offers].slice(0, MAX_OFFERS_DISPLAYED).map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
+const generateOffers = (offers) => (
+  [...offers].slice(0, MAX_OFFERS_DISPLAYED).map((offer) => (
+    offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``
+  )).join(``)
+);
 
-const generatePictures = (pictures) => pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``);
+const generatePictures = (pictures) => (
+  pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``)
+);
 
+const extendedOffersTemplate = (offers, travel) => {
+  return offers.map((offer) => {
+    return `<input
+      class="point__offers-input visually-hidden"
+      type="checkbox"
+      id="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}"
+      name="offer" ${offer.accepted ? `checked` : ``}
+      value="${capitalizeFirstLetter(offer.title)}">
+      <label for="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}" class="point__offers-label">
+        <span class="point__offer-service">${offer.title}</span> + €
+        <span class="point__offer-price"> ${offer.price} </span>
+      </label>`;
+  }).join(``);
+};
 
-const extendedOffersTemplate = (offers, travel) => offers.map((offer) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}"
-name="offer" ${offer.accepted ? `checked` : ``} value="${capitalizeFirstLetter(offer.title)}"> <label for="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}" class="point__offers-label">
-<span class="point__offer-service">${offer.title}</span> + €<span class="point__offer-price"> ${offer.price} </span>
-</label>`).join(``);
+const getDestinationsTemplate = (destinations) => (
+  destinations.map((destination) => `<option value="${destination.destination.name}"></option>`).join(``)
+);
 
-const getDestinationsTemplate = (destinations) => destinations.map((destination) => `<option value="${destination.destination.name}"></option>`).join(``);
-
-export {basicTravelPointTemplate, extendedTravelPointTemplate};
+export {
+  basicTravelPointTemplate,
+  extendedTravelPointTemplate
+};

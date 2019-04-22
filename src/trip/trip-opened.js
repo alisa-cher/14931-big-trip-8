@@ -253,6 +253,27 @@ class OpenedTripPoint extends Component {
     deleteButtonElement(this._element).innerHTML = text;
   }
 
+  _renderErrorState() {
+    this.shake();
+    this.changeFormBorder(`3px solid red`);
+    this.unlockForm();
+  }
+
+  renderSaveErrorState() {
+    this._renderErrorState();
+    this.modifySaveButtonText(`Save`);
+  }
+
+  renderDeleteErrorState() {
+    this._renderErrorState();
+    this.modifyDeleteButtonText(`Delete`);
+  }
+
+  renderSavingState() {
+    this.blockForm();
+    this.modifySaveButtonText(`Saving...`);
+  }
+
   shake() {
     const ANIMATION_TIMEOUT = 600;
     this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
