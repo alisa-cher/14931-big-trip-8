@@ -11,11 +11,16 @@ const sortObjectKeys = (obj) => Object.keys(obj).sort((a, b) => obj[b] - obj[a])
 
 const checkIfHasProperty = (obj, property) => obj.hasOwnProperty(property);
 
-const findIndexOfProperty = (array, property, targetProperty) => (array.map((item) => item[property]).indexOf(targetProperty));
+const findIndexOfProperty = (array, property, targetProperty) => (
+  array.map((item) => item[property]).indexOf(targetProperty)
+);
 
 const filterEmptyData = (arr) => arr.filter((item) => item !== null);
 
-const getTotalOffersCost = (arr) => arr.map((offer) => offer.price).reduce((cost, offer) => cost + offer);
+const getTotalOffersCost = (arr) =>
+  arr
+    .map((offer) => offer.price)
+    .reduce((cost, offer) => cost + offer);
 
 const calcTripPointPrice = (tripPointData) => {
   const offersArray = [...tripPointData.offers].filter((offer) => offer.accepted);
@@ -51,6 +56,16 @@ const getDurationInHoursAndMinutes = (duration) => {
   return formattedDays + ` ` + formattedHours + ` ` + formattedMinutes;
 };
 
-export {getRandomInteger, getRandomElementFromArray, getRandomTimeStampWithinADay, capitalizeFirstLetter,
-  sortObjectKeys, getDurationInHoursAndMinutes, checkIfHasProperty, filterEmptyData, findIndexOfProperty,
-  getTotalOffersCost, calcTripPointPrice};
+export {
+  getRandomInteger,
+  getRandomElementFromArray,
+  getRandomTimeStampWithinADay,
+  capitalizeFirstLetter,
+  sortObjectKeys,
+  getDurationInHoursAndMinutes,
+  checkIfHasProperty,
+  filterEmptyData,
+  findIndexOfProperty,
+  getTotalOffersCost,
+  calcTripPointPrice
+};

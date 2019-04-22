@@ -15,4 +15,7 @@ const groupTripsByDay = (trips) => {
   return groupDataByProperty(addTripDayProperty(trips), `day`);
 };
 
-export {addTripDayProperty, groupTripsByDay};
+export {
+  addTripDayProperty,
+  groupTripsByDay
+};

@@ -23,15 +23,14 @@ class Statistics extends Component {
   }
 
   get template() {
-    return `<canvas class="statistic__${this.className}" width="900"></canvas>`;
+    return `<div class="statistic__item statistic__item--${this.className}"><canvas class="statistic__${this.className}" width="900"></canvas></div>`;
   }
 
   render() {
-    super.render(`div`);
-    this._element.classList.add(`statistic__item`, `statistic__item--${this.className}`);
+    super.render();
     const ctx = this._element.querySelector(`canvas`);
-    ctx.height = BAR_HEIGHT * this._labels.length;
     this.init(ctx, this._configs);
+    ctx.height = BAR_HEIGHT * this._labels.length;
     return this._element;
   }
 

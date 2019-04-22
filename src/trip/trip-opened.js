@@ -1,5 +1,5 @@
 import {extendedTravelPointTemplate} from './trip-template';
-import TripComponent from './component';
+import Component from './../component';
 import flatpickr from './../../node_modules/flatpickr';
 import {findIndexOfProperty} from './../helpers';
 
@@ -13,9 +13,10 @@ const offersWrapperElement = (element) => element.querySelector(`.point__offers-
 
 const ESC_BUTTON = 27;
 
-class OpenedTripPoint extends TripComponent {
+class OpenedTripPoint extends Component {
   constructor(tripPoint, destinations, offers) {
-    super(tripPoint);
+    super();
+    this._tripPoint = tripPoint;
     this._destinations = destinations;
     this._offersForAllDestinations = offers;
     this._onSubmit = null;
@@ -165,14 +166,17 @@ class OpenedTripPoint extends TripComponent {
 
   _partialUpdate() {
     this.unbind();
-    this._element.innerHTML = this.template;
+    const templateElement = document.createElement(`template`);
+    templateElement.innerHTML = this.template;
+    this._elementCopy = templateElement.content.firstChild;
+    this._element.parentNode.replaceChild(this._elementCopy, this._element);
+    this._element = this._elementCopy;
     this._checkActiveTravelType();
     this.bind();
   }
 
   render() {
-    super.render(`article`);
-    this._element.classList.add(`point`);
+    super.render();
     this._checkActiveTravelType();
     return this._element;
   }
@@ -186,7 +190,7 @@ class OpenedTripPoint extends TripComponent {
     };
   }
 
-  enableTimePickers() {
+  initTimePickers() {
     const endDatePickerConfigs = Object.assign({}, this.timepickerConfigs, {
       onChange: (selectedDates, dateStr) => {
         startDatePicker.set(`maxDate`, dateStr);
@@ -214,7 +218,7 @@ class OpenedTripPoint extends TripComponent {
     favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
     offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
     document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
-    this.enableTimePickers();
+    this.initTimePickers();
   }
 
   unbind() {
@@ -249,6 +253,27 @@ class OpenedTripPoint extends TripComponent {
     deleteButtonElement(this._element).innerHTML = text;
   }
 
+  _renderErrorState() {
+    this.shake();
+    this.changeFormBorder(`3px solid red`);
+    this.unlockForm();
+  }
+
+  renderSaveErrorState() {
+    this._renderErrorState();
+    this.modifySaveButtonText(`Save`);
+  }
+
+  renderDeleteErrorState() {
+    this._renderErrorState();
+    this.modifyDeleteButtonText(`Delete`);
+  }
+
+  renderSavingState() {
+    this.blockForm();
+    this.modifySaveButtonText(`Saving...`);
+  }
+
   shake() {
     const ANIMATION_TIMEOUT = 600;
     this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
@@ -256,6 +281,10 @@ class OpenedTripPoint extends TripComponent {
     setTimeout(() => {
       this._element.style.animation = ``;
     }, ANIMATION_TIMEOUT);
+  }
+
+  update(data) {
+    this._tripPoint = data;
   }
 
 }

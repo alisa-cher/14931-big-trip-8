@@ -3,7 +3,9 @@ import {travelIcons} from './data';
 import moment from './../../node_modules/moment';
 import {getDurationInHoursAndMinutes} from './../helpers';
 
-const basicTravelPointTemplate = (travel) => `
+const MAX_OFFERS_DISPLAYED = 3;
+
+const basicTravelPointTemplate = (travel) => `<article class="trip-point">
           <i class="trip-icon">${travelIcons[travel.travelType]}</i>
           <h3 class="trip-point__title">${capitalizeFirstLetter(travel.travelType) + ` to ` + travel.destination.name}</h3>
           <p class="trip-point__schedule">
@@ -15,9 +17,9 @@ const basicTravelPointTemplate = (travel) => `
             </span>
           </p>
           <p class="trip-point__price">${travel.price} €</p>
-          <ul class="trip-point__offers">${generateOffers(travel.offers)}</ul>`;
+          <ul class="trip-point__offers">${generateOffers(travel.offers)}</ul></article>`;
 
-const extendedTravelPointTemplate = (travel, destinations) => `<form action="" method="get">
+const extendedTravelPointTemplate = (travel, destinations) => `<article class="point"> <form action="" method="get">
     <header class="point__header">
       <label class="point__date">
         choose day
@@ -98,18 +100,38 @@ const extendedTravelPointTemplate = (travel, destinations) => `<form action="" m
       </section>
       <input type="hidden" class="point__total-price" name="total-price" value="">
     </section>
-  </form>`;
+  </form></article>`;
 
-const generateOffers = (offers) => [...offers].slice(0, 3).map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
+const generateOffers = (offers) => (
+  [...offers].slice(0, MAX_OFFERS_DISPLAYED).map((offer) => (
+    offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``
+  )).join(``)
+);
 
-const generatePictures = (pictures) => pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``);
+const generatePictures = (pictures) => (
+  pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``)
+);
 
+const extendedOffersTemplate = (offers, travel) => {
+  return offers.map((offer) => {
+    return `<input
+      class="point__offers-input visually-hidden"
+      type="checkbox"
+      id="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}"
+      name="offer" ${offer.accepted ? `checked` : ``}
+      value="${capitalizeFirstLetter(offer.title)}">
+      <label for="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}" class="point__offers-label">
+        <span class="point__offer-service">${offer.title}</span> + €
+        <span class="point__offer-price"> ${offer.price} </span>
+      </label>`;
+  }).join(``);
+};
 
-const extendedOffersTemplate = (offers, travel) => offers.map((offer) => `<input class="point__offers-input visually-hidden" type="checkbox" id="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}"
-name="offer" ${offer.accepted ? `checked` : ``} value="${capitalizeFirstLetter(offer.title)}"> <label for="${offer.title.replace(/ +/g, `-`).toLowerCase() + travel.id}" class="point__offers-label">
-<span class="point__offer-service">${offer.title}</span> + €<span class="point__offer-price"> ${offer.price} </span>
-</label>`).join(``);
+const getDestinationsTemplate = (destinations) => (
+  destinations.map((destination) => `<option value="${destination.destination.name}"></option>`).join(``)
+);
 
-const getDestinationsTemplate = (destinations) => destinations.map((destination) => `<option value="${destination.destination.name}"></option>`).join(``);
-
-export {basicTravelPointTemplate, extendedTravelPointTemplate};
+export {
+  basicTravelPointTemplate,
+  extendedTravelPointTemplate
+};

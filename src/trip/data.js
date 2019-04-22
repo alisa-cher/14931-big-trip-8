@@ -14,4 +14,8 @@ const travelIcons = {
   'restaurant': `🍴`,
 };
 
-export {travelIcons, travelTypes, transportTypes};
+export {
+  travelIcons,
+  travelTypes,
+  transportTypes
+};
