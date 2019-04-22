@@ -1,9 +1,10 @@
 import {basicTravelPointTemplate} from './trip-template';
-import TripComponent from './component';
+import Component from './../component';
 
-class TripPoint extends TripComponent {
+class TripPoint extends Component {
   constructor(tripPoint) {
-    super(tripPoint);
+    super();
+    this._tripPoint = tripPoint;
   }
 
   get template() {
@@ -32,6 +33,10 @@ class TripPoint extends TripComponent {
 
   unbind() {
     this._element.removeEventListener(`click`, this._onTripPanelClick.bind(this));
+  }
+
+  update(data) {
+    this._tripPoint = data;
   }
 }
 

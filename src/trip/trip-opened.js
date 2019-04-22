@@ -1,5 +1,5 @@
 import {extendedTravelPointTemplate} from './trip-template';
-import TripComponent from './component';
+import Component from './../component';
 import flatpickr from './../../node_modules/flatpickr';
 import {findIndexOfProperty} from './../helpers';
 
@@ -13,9 +13,10 @@ const offersWrapperElement = (element) => element.querySelector(`.point__offers-
 
 const ESC_BUTTON = 27;
 
-class OpenedTripPoint extends TripComponent {
+class OpenedTripPoint extends Component {
   constructor(tripPoint, destinations, offers) {
-    super(tripPoint);
+    super();
+    this._tripPoint = tripPoint;
     this._destinations = destinations;
     this._offersForAllDestinations = offers;
     this._onSubmit = null;
@@ -186,7 +187,7 @@ class OpenedTripPoint extends TripComponent {
     };
   }
 
-  enableTimePickers() {
+  initTimePickers() {
     const endDatePickerConfigs = Object.assign({}, this.timepickerConfigs, {
       onChange: (selectedDates, dateStr) => {
         startDatePicker.set(`maxDate`, dateStr);
@@ -214,7 +215,7 @@ class OpenedTripPoint extends TripComponent {
     favoriteInputElement(this._element).addEventListener(`change`, this._onIsFavoriteChange.bind(this));
     offersWrapperElement(this._element).addEventListener(`change`, this._onOffersSelect.bind(this));
     document.addEventListener(`keydown`, this._onEscapeKeyPress.bind(this));
-    this.enableTimePickers();
+    this.initTimePickers();
   }
 
   unbind() {
@@ -256,6 +257,10 @@ class OpenedTripPoint extends TripComponent {
     setTimeout(() => {
       this._element.style.animation = ``;
     }, ANIMATION_TIMEOUT);
+  }
+
+  update(data) {
+    this._tripPoint = data;
   }
 
 }

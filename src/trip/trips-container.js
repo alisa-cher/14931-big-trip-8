@@ -38,10 +38,9 @@ class TripsContainer {
       this.initTripPoint(trip, element, tripDayElement);
     });
   }
-
   initAllTripsDays(data) {
     const sortedByDayTrips = groupTripsByDay(data);
-    return Object.keys(sortedByDayTrips).forEach(function (index) {
+    Object.keys(sortedByDayTrips).forEach(function (index) {
       const dayCounter = state.tripDates.findIndex((element) => (element === index));
       const trips = sortedByDayTrips[index];
       const tripDay = new TripDay(dayCounter, index);
@@ -49,10 +48,6 @@ class TripsContainer {
       this.initTripsDay(trips, tripDay.element);
       tripDaysWrapper.appendChild(tripDay.element);
     }.bind(this));
-  }
-
-  init() {
-    this.initAllTripsDays(this._tripPoints);
   }
 
   initTripPoint(trip, element, tripDayElement) {
@@ -65,62 +60,102 @@ class TripsContainer {
       trip.unrender();
     };
   }
-
   initOpenedTrip(trip, openedTrip, editedTrip, tripDayElement) {
-    openedTrip.onEscape = () => {
-      if (!openedTrip.element) {
+    openedTrip.onEscape = () => this.onOpenedTripEscape(openedTrip, trip, tripDayElement);
+    openedTrip.onSubmit = (formData) => this.onOpenedTripSubmit(formData, openedTrip, editedTrip, tripDayElement);
+    openedTrip.onDelete = () => this.onOpenedTripDelete(openedTrip, editedTrip);
+  }
+  onOpenedTripEscape(openedTrip, trip, tripDayElement) {
+    if (!openedTrip.element) {
+      openedTrip.unrender();
+    } else {
+      itemsWrapper(tripDayElement).appendChild(trip.render());
+      itemsWrapper(tripDayElement).replaceChild(trip.element, openedTrip.element);
+      openedTrip.unrender();
+    }
+  }
+  onOpenedTripSubmit(formData, openedTrip, editedTrip, tripDayElement) {
+    openedTrip.blockForm();
+    openedTrip.modifySaveButtonText(`Saving...`);
+
+    api.updateTrip({id: editedTrip.id, data: ModelTrip.toRAW(formData)})
+      .then((newTripPointData) => {
+        state.data[newTripPointData.id].price = +newTripPointData.price;
+
+        const newTotalPrice = new TotalPrice(state.data);
+        menuElement.replaceChild(newTotalPrice.render(), state.totalPriceInstance.element);
+        state.setTotalPriceInstance(newTotalPrice);
+
+        const newTrip = new TripPoint(newTripPointData);
+        this.initTripPoint(newTrip, newTripPointData, tripDayElement);
+        itemsWrapper(tripDayElement).replaceChild(newTrip.render(), openedTrip.element);
+
         openedTrip.unrender();
-      } else {
-        itemsWrapper(tripDayElement).appendChild(trip.render());
-        itemsWrapper(tripDayElement).replaceChild(trip.element, openedTrip.element);
-        openedTrip.unrender();
-      }
-    };
+      })
+      .catch(() => {
+        openedTrip.shake();
+        openedTrip.changeFormBorder(`3px solid red`);
+        openedTrip.unlockForm();
+        openedTrip.modifySaveButtonText(`Save`);
+      });
+  }
+  onOpenedTripDelete(openedTrip, editedTrip) {
+    openedTrip.blockForm();
+    openedTrip.modifyDeleteButtonText(`Deleting...`);
+    api.deleteTrip(editedTrip.id)
+      .catch(() => {
+        openedTrip.shake();
+        openedTrip.changeFormBorder(`3px solid red`);
+        openedTrip.unlockForm();
+        openedTrip.modifyDeleteButtonText(`Delete`);
+      })
+      .then(() => api.getTrips())
+      .then((tripPoints) => {
+        state.setTripDates(tripPoints);
+        state.setData(tripPoints);
+        this.remove();
+        this.initAllTripsDays(state.data);
+      });
+  }
 
-    openedTrip.onSubmit = (formData) => {
-      openedTrip.blockForm();
-      openedTrip.modifySaveButtonText(`Saving...`);
+  onNewTripSubmit(newOpenedTrip) {
+    newOpenedTrip.blockForm();
+    newOpenedTrip.modifySaveButtonText(`Saving...`);
 
-      api.updateTrip({id: editedTrip.id, data: ModelTrip.toRAW(formData)})
-        .then((newTripPointData) => {
-          state.data[newTripPointData.id].price = +newTripPointData.price;
+    api.createTrip(ModelTrip.toRAW(newOpenedTrip._tripPoint))
+      .then(() => api.getTrips())
+      .then((data) => {
+        state.setData(data);
+        newOpenedTrip.unrender();
+        this.remove();
+        this.update(data);
+        this.init();
+      })
+      .catch(() => {
+        newOpenedTrip.shake();
+        newOpenedTrip.changeFormBorder(`3px solid red`);
+        newOpenedTrip.unlockForm();
+        newOpenedTrip.modifySaveButtonText(`Save`);
+      });
+  }
+  onNewTripEscape(newOpenedTrip, newTripWrapper) {
+    if (!newOpenedTrip.element) {
+      newOpenedTrip.unrender();
+    }
+    tripDaysWrapper.removeChild(newTripWrapper.element);
+  }
+  onNewTripDelete(newOpenedTrip, newTripWrapper) {
+    newOpenedTrip.unrender();
+    tripDaysWrapper.removeChild(newTripWrapper.element);
+  }
+  initNewTrip(newOpenedTrip, newTripWrapper) {
+    newOpenedTrip.onSubmit = () => this.onNewTripSubmit(newOpenedTrip);
+    newOpenedTrip.onEscape = () => this.onNewTripEscape(newOpenedTrip, newTripWrapper);
+    newOpenedTrip.onDelete = () => this.onNewTripDelete(newOpenedTrip, newTripWrapper);
+  }
 
-          const newTotalPrice = new TotalPrice(state.data);
-          menuElement.replaceChild(newTotalPrice.render(), state.totalPriceInstance.element);
-          state.setTotalPriceInstance(newTotalPrice);
-
-          const newTrip = new TripPoint(newTripPointData);
-          this.initTripPoint(newTrip, newTripPointData, tripDayElement);
-          itemsWrapper(tripDayElement).replaceChild(newTrip.render(), openedTrip.element);
-
-          openedTrip.unrender();
-        })
-        .catch(() => {
-          openedTrip.shake();
-          openedTrip.changeFormBorder(`3px solid red`);
-          openedTrip.unlockForm();
-          openedTrip.modifySaveButtonText(`Save`);
-        });
-    };
-
-    openedTrip.onDelete = () => {
-      openedTrip.blockForm();
-      openedTrip.modifyDeleteButtonText(`Deleting...`);
-      api.deleteTrip(editedTrip.id)
-        .catch(() => {
-          openedTrip.shake();
-          openedTrip.changeFormBorder(`3px solid red`);
-          openedTrip.unlockForm();
-          openedTrip.modifyDeleteButtonText(`Delete`);
-        })
-        .then(() => api.getTrips())
-        .then((tripPoints) => {
-          state.setTripDates(tripPoints);
-          state.setData(tripPoints);
-          this.remove();
-          this.initAllTripsDays(state.data);
-        });
-    };
+  init() {
+    this.initAllTripsDays(this._tripPoints);
   }
 
   remove() {

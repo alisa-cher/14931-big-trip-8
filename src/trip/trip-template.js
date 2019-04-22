@@ -3,6 +3,8 @@ import {travelIcons} from './data';
 import moment from './../../node_modules/moment';
 import {getDurationInHoursAndMinutes} from './../helpers';
 
+const MAX_OFFERS_DISPLAYED = 3;
+
 const basicTravelPointTemplate = (travel) => `
           <i class="trip-icon">${travelIcons[travel.travelType]}</i>
           <h3 class="trip-point__title">${capitalizeFirstLetter(travel.travelType) + ` to ` + travel.destination.name}</h3>
@@ -100,7 +102,7 @@ const extendedTravelPointTemplate = (travel, destinations) => `<form action="" m
     </section>
   </form>`;
 
-const generateOffers = (offers) => [...offers].slice(0, 3).map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
+const generateOffers = (offers) => [...offers].slice(0, MAX_OFFERS_DISPLAYED).map((offer) => offer.accepted ? `<li><button class="trip-point__offer">${offer.title}</button></li>` : ``).join(``);
 
 const generatePictures = (pictures) => pictures.map((picture) => `<img src="${picture.src}" alt="${picture.description}" class="point__destination-image">`).join(``);
 

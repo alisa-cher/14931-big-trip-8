@@ -35,7 +35,8 @@ const getTimeStatistics = function (tripPoints) {
   const statistics = {};
   for (const tripPoint of tripPoints) {
     const icon = travelIcons[tripPoint.travelType];
-    statistics[icon + ` ` + capitalizeFirstLetter(tripPoint.travelType) + ` to ` + tripPoint.destination.name] = Math.abs(tripPoint.time.arrival - tripPoint.time.departure);
+    const key = icon + ` ` + capitalizeFirstLetter(tripPoint.travelType) + ` to ` + tripPoint.destination.name;
+    statistics[key] = Math.abs(tripPoint.time.arrival - tripPoint.time.departure);
   }
   return statistics;
 };
