@@ -30,7 +30,7 @@ class Statistics extends Component {
     super.render();
     const ctx = this._element.querySelector(`canvas`);
     this.init(ctx, this._configs);
-    this._element.style.height = BAR_HEIGHT * this._labels.length +  `px`;
+    this._element.style.height = BAR_HEIGHT * this._labels.length + `px`;
     return this._element;
   }
 
