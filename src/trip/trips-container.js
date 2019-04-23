@@ -39,6 +39,7 @@ class TripsContainer {
       this.initTripPoint(trip, element, tripDayElement);
     });
   }
+
   initAllTripsDays(data) {
     const sortedByDayTrips = groupTripsByDay(data);
 
@@ -136,6 +137,7 @@ class TripsContainer {
     api.createTrip(ModelTrip.toRAW(newOpenedTrip._tripPoint))
       .then(() => api.getTrips())
       .then((data) => {
+        state.setTripDates(data);
         state.setData(data);
         newOpenedTrip.unrender();
         this.remove();

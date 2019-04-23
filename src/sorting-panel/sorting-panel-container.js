@@ -17,13 +17,11 @@ class SortingPanelContainer {
     sortingPanel.onChange = () => {
       const dataToSort = state.filteredTrips.length ? state.filteredTrips : state.data;
       const sortedData = sortTrips(dataToSort, sortingPanel.activeSort);
+      trips.remove();
+      trips.update(sortedData);
       if (sortingPanel.activeSort === `sorting-event`) {
-        trips.remove();
-        trips.update(sortedData);
         trips.init();
       } else {
-        trips.remove();
-        trips.update(sortedData);
         trips.initAllTrips(sortedData);
       }
     };
