@@ -42,11 +42,11 @@ export class ModelTrip {
       'id': data.id,
       'is_favorite': data.isFavorite,
       'type': data.travelType,
-      'date_from': data.time.departure,
-      'date_to': data.time.arrival,
+      'date_from': +data.time.departure,
+      'date_to': +data.time.arrival,
       'destination': data.destination,
       'offers': data.offers,
-      'base_price': data.price,
+      'base_price': +data.price,
     };
   }
 
